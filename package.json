@@ -1,0 +1,29 @@
+{
+  "name": "purrlight",
+  "version": "1.0.0",
+  "description": "A cozy low-poly 3D village sim about winning over wary mountain cats. Vanilla JavaScript, a hand-written WebGL 2 renderer and Web Audio, with zero runtime dependencies.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "npx --yes serve -l 5173 .",
+    "build": "node tools/build.js",
+    "test": "node --test \"tests/unit/**/*.test.js\"",
+    "test:e2e": "node tools/build.js && node --test \"tests/e2e/**/*.test.js\"",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -p jsconfig.json",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm test",
+    "screenshots": "node tools/build.js && node tools/screenshots.js"
+  },
+  "devDependencies": {
+    "eslint": "^10.1.0",
+    "playwright": "^1.63.0",
+    "prettier": "^3.8.1",
+    "typescript": "^7.0.2"
+  }
+}

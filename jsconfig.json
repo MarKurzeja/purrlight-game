@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "checkJs": true,
+    "allowJs": true,
+    "noEmit": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": [
+    "src/core/**/*.js",
+    "src/data/**/*.js",
+    "src/config.js",
+    "src/engine/gl/math3d.js",
+    "src/engine/gl/geometry.js",
+    "src/engine/gl/renderer.js",
+    "src/render/space.js",
+    "src/render/lighting.js",
+    "src/render/valley.js",
+    "src/render/village3d.js",
+    "src/render/models.js"
+  ]
+}
