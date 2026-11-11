@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # No lockfile is committed yet, so install from package.json.
+      # After running `npm install` locally and committing package-lock.json,
+      # switch this to `npm ci` and add `cache: npm` above for faster runs.
+      - run: npm install
+      - name: Lint
+        run: npm run lint
+      - name: Formatting
+        run: npm run format:check
+      - name: Type check
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Install browser for end-to-end tests
+        run: npx playwright install --with-deps chromium
+      - name: Build and end-to-end tests
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        with:
+          name: purrlight
+          path: dist/index.html

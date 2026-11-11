@@ -1,5 +1,9 @@
 # Purrlight
 
+[![CI](https://github.com/MarKurzeja/purrlight-game/actions/workflows/ci.yml/badge.svg)](https://github.com/MarKurzeja/purrlight-game/actions/workflows/ci.yml)
+![Node 22](https://img.shields.io/badge/node-22-3f7a5c)
+[![License: MIT](https://img.shields.io/badge/license-MIT-c8423c)](LICENSE)
+
 A cozy low-poly 3D village sim about winning over the wary cats of an abandoned Alpine village.
 Forage at dawn, care for the cats by day, gather at the fire in the evening, and rebuild the
 village at night, until you can relight the Great Lantern.
