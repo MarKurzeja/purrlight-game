@@ -2,8 +2,8 @@
  * Canvas primitives. The game draws at 480x270 on a pixel canvas that is upscaled with
  * crisp pixels, plus a full-resolution overlay canvas for text.
  */
-import { VIEW_WIDTH } from '../config.js';
-import { clamp, lerp } from '../core/math.js';
+import { VIEW_WIDTH } from "../config.js";
+import { clamp, lerp } from "../core/math.js";
 
 /**
  * The two on-screen canvases. Filled in by initDisplay().
@@ -20,9 +20,13 @@ export const display = {
  * @param {HTMLCanvasElement} overlayCanvas
  */
 export function initDisplay(pixelCanvas, overlayCanvas) {
-  display.pixel = /** @type {CanvasRenderingContext2D} */ (pixelCanvas.getContext('2d'));
+  display.pixel = /** @type {CanvasRenderingContext2D} */ (
+    pixelCanvas.getContext("2d")
+  );
   display.pixel.imageSmoothingEnabled = false;
-  display.overlay = /** @type {CanvasRenderingContext2D} */ (overlayCanvas.getContext('2d'));
+  display.overlay = /** @type {CanvasRenderingContext2D} */ (
+    overlayCanvas.getContext("2d")
+  );
 }
 
 /**
@@ -53,10 +57,10 @@ export function fitStage(container, stage, overlayCanvas) {
  * @param {number} height
  */
 export function makeCanvas(width, height) {
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
-  const ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
+  const ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext("2d"));
   ctx.imageSmoothingEnabled = false;
   return { canvas, ctx };
 }
@@ -64,7 +68,12 @@ export function makeCanvas(width, height) {
 /** A filled rectangle snapped to whole pixels. */
 export function rect(ctx, x, y, width, height, color) {
   ctx.fillStyle = color;
-  ctx.fillRect(Math.round(x), Math.round(y), Math.round(width), Math.round(height));
+  ctx.fillRect(
+    Math.round(x),
+    Math.round(y),
+    Math.round(width),
+    Math.round(height),
+  );
 }
 
 /** A filled pixel-art ellipse (drawn as horizontal spans, so edges stay crisp). */
@@ -73,7 +82,9 @@ export function ellipse(ctx, cx, cy, rx, ry, color) {
   cx = Math.round(cx);
   cy = Math.round(cy);
   for (let y = -ry; y <= ry; y++) {
-    const halfWidth = Math.round(rx * Math.sqrt(Math.max(0, 1 - (y * y) / (ry * ry + 0.01))));
+    const halfWidth = Math.round(
+      rx * Math.sqrt(Math.max(0, 1 - (y * y) / (ry * ry + 0.01))),
+    );
     ctx.fillRect(cx - halfWidth, cy + y, halfWidth * 2 + 1, 1);
   }
 }
@@ -92,9 +103,9 @@ export function mixColor(a, b, t) {
     .map((v, i) =>
       Math.round(lerp(v, to[i], t))
         .toString(16)
-        .padStart(2, '0'),
+        .padStart(2, "0"),
     )
-    .join('')}`;
+    .join("")}`;
 }
 
 /* ---------- Noise, for organic textures ---------- */
@@ -149,7 +160,11 @@ export function setPixel(buffer, x, y, rgb) {
 /** @param {PixelBuffer} buffer */
 export function bufferToCanvas(buffer) {
   const { canvas, ctx } = makeCanvas(buffer.width, buffer.height);
-  ctx.putImageData(new ImageData(buffer.data, buffer.width, buffer.height), 0, 0);
+  ctx.putImageData(
+    new ImageData(buffer.data, buffer.width, buffer.height),
+    0,
+    0,
+  );
   return canvas;
 }
 
@@ -186,14 +201,14 @@ export function drawText(text, x, y, options = {}) {
   const ctx = display.overlay;
   const s = display.scale;
   ctx.font = `${Math.round((options.size ?? 9) * s)}px "Pixelify Sans", ui-monospace, monospace`;
-  ctx.textAlign = options.align ?? 'center';
-  ctx.textBaseline = 'middle';
+  ctx.textAlign = options.align ?? "center";
+  ctx.textBaseline = "middle";
   ctx.globalAlpha = options.alpha ?? 1;
   if (options.shadow !== false) {
-    ctx.fillStyle = 'rgba(45,35,70,.8)';
+    ctx.fillStyle = "rgba(45,35,70,.8)";
     ctx.fillText(text, x * s + s * 0.5, y * s + s * 0.6);
   }
-  ctx.fillStyle = options.color ?? '#fdf8ef';
+  ctx.fillStyle = options.color ?? "#fdf8ef";
   ctx.fillText(text, x * s, y * s);
   ctx.globalAlpha = 1;
 }
@@ -209,5 +224,10 @@ export function overlayRect(x, y, width, height, color) {
 export function clearOverlay() {
   const canvas = display.overlay.canvas;
   display.overlay.clearRect(0, 0, canvas.width, canvas.height);
-  display.pixel.clearRect(0, 0, display.pixel.canvas.width, display.pixel.canvas.height);
+  display.pixel.clearRect(
+    0,
+    0,
+    display.pixel.canvas.width,
+    display.pixel.canvas.height,
+  );
 }

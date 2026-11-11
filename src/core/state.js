@@ -2,9 +2,9 @@
  * The persistent game state: everything that goes into a save file.
  * Runtime-only things (positions, particles, timers) live in game/runtime.js instead.
  */
-import { BALANCE, SAVE_VERSION } from '../config.js';
-import { CATS, STARTING_CATS } from '../data/cats.js';
-import { SEASONS } from '../data/seasons.js';
+import { BALANCE, SAVE_VERSION } from "../config.js";
+import { CATS, STARTING_CATS } from "../data/cats.js";
+import { SEASONS } from "../data/seasons.js";
 
 /**
  * @typedef {'full' | 'short'} JourneyMode
@@ -80,7 +80,7 @@ function createCatState(catId) {
   const cat = CATS.find((c) => c.id === catId);
   return {
     name: cat ? cat.name : catId,
-    warmth: catId === 'biscuit' ? 26 : 19,
+    warmth: catId === "biscuit" ? 26 : 19,
     bond: 0,
     present: STARTING_CATS.includes(catId),
     hat: null,
@@ -108,18 +108,20 @@ function createCatState(catId) {
  * @param {JourneyMode} mode
  * @returns {GameState}
  */
-export function createInitialState(mode = 'full') {
+export function createInitialState(mode = "full") {
   return {
     version: SAVE_VERSION,
     mode,
     day: 1,
     season: 0,
     seasonDay: 1,
-    phase: 'dawn',
+    phase: "dawn",
     clock: 0,
-    purrs: mode === 'short' ? 12 : 0,
+    purrs: mode === "short" ? 12 : 0,
     bag: { sardine: 1, herb: 1 },
-    cats: Object.fromEntries(CATS.map((cat) => [cat.id, createCatState(cat.id)])),
+    cats: Object.fromEntries(
+      CATS.map((cat) => [cat.id, createCatState(cat.id)]),
+    ),
     built: {},
     nooks: 0,
     rod: 0,
@@ -148,7 +150,8 @@ export const currentSeason = (state) => SEASONS[state.season];
 export const seasonLength = (state) => BALANCE.seasonDays[state.mode];
 
 /** Short journeys earn Purrs and bond faster. @param {GameState} state */
-export const purrMultiplier = (state) => (state.mode === 'short' ? BALANCE.shortJourneyPace : 1);
+export const purrMultiplier = (state) =>
+  state.mode === "short" ? BALANCE.shortJourneyPace : 1;
 
 /**
  * Changes a cat's bond. Gains are scaled by the journey's pace; bond never drops below zero.
@@ -158,11 +161,15 @@ export const purrMultiplier = (state) => (state.mode === 'short' ? BALANCE.short
  */
 export function addBond(state, catId, amount) {
   const cat = state.cats[catId];
-  cat.bond = Math.max(0, cat.bond + (amount > 0 ? amount * purrMultiplier(state) : amount));
+  cat.bond = Math.max(
+    0,
+    cat.bond + (amount > 0 ? amount * purrMultiplier(state) : amount),
+  );
 }
 
 /** Cats currently living in the village. @param {GameState} state */
-export const presentCats = (state) => CATS.filter((cat) => state.cats[cat.id].present);
+export const presentCats = (state) =>
+  CATS.filter((cat) => state.cats[cat.id].present);
 
 /**
  * Is this cat still a wary stray? Once the Lantern is lit no cat is wary again.
@@ -182,5 +189,8 @@ export function addToBag(state, item, amount = 1) {
 
 /** Adds Warmth, keeping it within bounds. @param {CatState} cat */
 export function changeWarmth(cat, amount) {
-  cat.warmth = Math.min(BALANCE.maxWarmth, Math.max(BALANCE.minWarmth, cat.warmth + amount));
+  cat.warmth = Math.min(
+    BALANCE.maxWarmth,
+    Math.max(BALANCE.minWarmth, cat.warmth + amount),
+  );
 }

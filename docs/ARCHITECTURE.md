@@ -48,7 +48,7 @@ Every rule in `core/` takes the state (and, where randomness is involved, an `rn
 and returns a result:
 
 ```js
-const result = feedCat(state, 'biscuit', 'milk');
+const result = feedCat(state, "biscuit", "milk");
 // { ok: true, taste: 'love', warmth: 29, discoveredFavourite: true }
 ```
 

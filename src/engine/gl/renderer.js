@@ -13,7 +13,7 @@ import {
   transformPoint,
   vec3Normalize,
   vec3Subtract,
-} from './math3d.js';
+} from "./math3d.js";
 import {
   LIT_FRAGMENT,
   LIT_VERTEX,
@@ -21,7 +21,7 @@ import {
   POINT_VERTEX,
   SKY_FRAGMENT,
   SKY_VERTEX,
-} from './shaders.js';
+} from "./shaders.js";
 
 /**
  * @typedef {import('./math3d.js').Vec3} Vec3
@@ -40,7 +40,7 @@ function compile(gl, type, source) {
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    throw new Error(gl.getShaderInfoLog(shader) ?? 'shader error');
+    throw new Error(gl.getShaderInfoLog(shader) ?? "shader error");
   }
   return shader;
 }
@@ -51,7 +51,7 @@ function program(gl, vertex, fragment) {
   gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, fragment));
   gl.linkProgram(p);
   if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
-    throw new Error(gl.getProgramInfoLog(p) ?? 'link error');
+    throw new Error(gl.getProgramInfoLog(p) ?? "link error");
   }
   /** @type {Record<string, WebGLUniformLocation | null>} */
   const uniforms = {};
@@ -60,19 +60,23 @@ function program(gl, vertex, fragment) {
     const info = gl.getActiveUniform(p, i);
     if (info) uniforms[info.name] = gl.getUniformLocation(p, info.name);
   }
-  return { program: p, uniforms, position: gl.getAttribLocation(p, 'aPosition') };
+  return {
+    program: p,
+    uniforms,
+    position: gl.getAttribLocation(p, "aPosition"),
+  };
 }
 
 /**
  * @param {HTMLCanvasElement} canvas
  */
 export function createRenderer(canvas) {
-  const context = canvas.getContext('webgl2', {
+  const context = canvas.getContext("webgl2", {
     antialias: false,
     alpha: false,
     preserveDrawingBuffer: true,
   });
-  if (!context) throw new Error('WebGL 2 is not available');
+  if (!context) throw new Error("WebGL 2 is not available");
   /** @type {WebGL2RenderingContext} */
   const gl = context;
   const lit = program(gl, LIT_VERTEX, LIT_FRAGMENT);
@@ -83,8 +87,12 @@ export function createRenderer(canvas) {
   gl.bindVertexArray(skyVao);
   const skyBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, skyBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-  const corner = gl.getAttribLocation(sky.program, 'aCorner');
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([-1, -1, 3, -1, -1, 3]),
+    gl.STATIC_DRAW,
+  );
+  const corner = gl.getAttribLocation(sky.program, "aCorner");
   gl.enableVertexAttribArray(corner);
   gl.vertexAttribPointer(corner, 2, gl.FLOAT, false, 0, 0);
 
@@ -98,9 +106,9 @@ export function createRenderer(canvas) {
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, size, gl.FLOAT, false, stride, offset);
   };
-  attrib('aPosition', 3, 0);
-  attrib('aColor', 4, 12);
-  attrib('aSize', 1, 28);
+  attrib("aPosition", 3, 0);
+  attrib("aColor", 4, 12);
+  attrib("aSize", 1, 28);
   gl.bindVertexArray(null);
 
   const state = {
@@ -121,9 +129,9 @@ export function createRenderer(canvas) {
     gl.bindVertexArray(vao);
     const buffers = [];
     for (const [name, array] of /** @type {[string, Float32Array][]} */ ([
-      ['aPosition', data.positions],
-      ['aNormal', data.normals],
-      ['aColor', data.colors],
+      ["aPosition", data.positions],
+      ["aNormal", data.normals],
+      ["aColor", data.colors],
     ])) {
       const buffer = /** @type {WebGLBuffer} */ (gl.createBuffer());
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -153,7 +161,10 @@ export function createRenderer(canvas) {
       camera.near ?? 0.3,
       camera.far ?? 400,
     );
-    state.viewProj = mat4Multiply(projection, mat4LookAt(camera.eye, camera.target));
+    state.viewProj = mat4Multiply(
+      projection,
+      mat4LookAt(camera.eye, camera.target),
+    );
     state.inverseViewProj = mat4Invert(state.viewProj) ?? state.viewProj;
   }
 
@@ -248,13 +259,28 @@ export function createRenderer(canvas) {
     if (!list.length) return;
     const data = new Float32Array(list.length * 8);
     list.forEach((p, i) =>
-      data.set([p.x, p.y, p.z, p.color[0], p.color[1], p.color[2], p.color[3] ?? 1, p.size], i * 8),
+      data.set(
+        [
+          p.x,
+          p.y,
+          p.z,
+          p.color[0],
+          p.color[1],
+          p.color[2],
+          p.color[3] ?? 1,
+          p.size,
+        ],
+        i * 8,
+      ),
     );
     gl.useProgram(points.program);
     gl.uniformMatrix4fv(points.uniforms.uViewProj, false, state.viewProj);
     // Point sizes are in metres: convert to pixels at distance w (see POINT_VERTEX).
     const fov = ((state.camera.fov ?? 38) * Math.PI) / 180;
-    gl.uniform1f(points.uniforms.uPixelScale, state.height / (2 * Math.tan(fov / 2)));
+    gl.uniform1f(
+      points.uniforms.uPixelScale,
+      state.height / (2 * Math.tan(fov / 2)),
+    );
     gl.bindVertexArray(pointVao);
     gl.bindBuffer(gl.ARRAY_BUFFER, pointBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW);
@@ -272,7 +298,8 @@ export function createRenderer(canvas) {
     gl.depthMask(false);
     state.transparent.sort((a, b) => b.depth - a.depth);
     for (const item of state.transparent) {
-      if (item.options.unlit && item.options.emissive) gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+      if (item.options.unlit && item.options.emissive)
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
       else gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       drawNow(item.mesh, item.model, item.options);
     }
@@ -287,7 +314,11 @@ export function createRenderer(canvas) {
    */
   function project(point) {
     const [x, y] = transformPoint(state.viewProj, point);
-    return { x: (x + 1) / 2, y: (1 - y) / 2, visible: clipW(state.viewProj, point) > 0 };
+    return {
+      x: (x + 1) / 2,
+      y: (1 - y) / 2,
+      visible: clipW(state.viewProj, point) > 0,
+    };
   }
 
   /**
@@ -296,9 +327,16 @@ export function createRenderer(canvas) {
    */
   function unproject(sx, sy) {
     const ndc = [sx * 2 - 1, 1 - sy * 2];
-    const nearPoint = transformPoint(state.inverseViewProj, [ndc[0], ndc[1], -1]);
+    const nearPoint = transformPoint(state.inverseViewProj, [
+      ndc[0],
+      ndc[1],
+      -1,
+    ]);
     const farPoint = transformPoint(state.inverseViewProj, [ndc[0], ndc[1], 1]);
-    return { origin: nearPoint, direction: vec3Normalize(vec3Subtract(farPoint, nearPoint)) };
+    return {
+      origin: nearPoint,
+      direction: vec3Normalize(vec3Subtract(farPoint, nearPoint)),
+    };
   }
 
   /** Changes the internal render resolution. */
@@ -318,12 +356,38 @@ export function createRenderer(canvas) {
     const color = gl.createTexture();
     const depth = gl.createRenderbuffer();
     gl.bindTexture(gl.TEXTURE_2D, color);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      width,
+      height,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      null,
+    );
     gl.bindRenderbuffer(gl.RENDERBUFFER, depth);
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
+    gl.renderbufferStorage(
+      gl.RENDERBUFFER,
+      gl.DEPTH_COMPONENT16,
+      width,
+      height,
+    );
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, color, 0);
-    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depth);
+    gl.framebufferTexture2D(
+      gl.FRAMEBUFFER,
+      gl.COLOR_ATTACHMENT0,
+      gl.TEXTURE_2D,
+      color,
+      0,
+    );
+    gl.framebufferRenderbuffer(
+      gl.FRAMEBUFFER,
+      gl.DEPTH_ATTACHMENT,
+      gl.RENDERBUFFER,
+      depth,
+    );
 
     const saved = {
       camera: state.camera,
@@ -353,10 +417,10 @@ export function createRenderer(canvas) {
       inverseViewProj: saved.inverse,
     });
 
-    const out = document.createElement('canvas');
+    const out = document.createElement("canvas");
     out.width = width;
     out.height = height;
-    const ctx = /** @type {CanvasRenderingContext2D} */ (out.getContext('2d'));
+    const ctx = /** @type {CanvasRenderingContext2D} */ (out.getContext("2d"));
     const image = ctx.createImageData(width, height);
     for (let y = 0; y < height; y++) {
       image.data.set(

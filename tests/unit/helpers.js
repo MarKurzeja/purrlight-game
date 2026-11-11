@@ -1,9 +1,9 @@
 /** Shared fixtures for unit tests. */
-import { createInitialState } from '../../src/core/state.js';
-import { createRng } from '../../src/core/random.js';
+import { createInitialState } from "../../src/core/state.js";
+import { createRng } from "../../src/core/random.js";
 
 /** A fresh full-length game with a fixed random seed. */
-export function newGame(mode = 'full') {
+export function newGame(mode = "full") {
   return createInitialState(mode);
 }
 

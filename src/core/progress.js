@@ -1,8 +1,8 @@
 /** Long-term progress: buildings, the Lantern, memories, and what to aim for next. */
-import { BALANCE } from '../config.js';
-import { BUILDINGS, LANTERN_PARTS } from '../data/village.js';
-import { tierOf } from './bond.js';
-import { addBond } from './state.js';
+import { BALANCE } from "../config.js";
+import { BUILDINGS, LANTERN_PARTS } from "../data/village.js";
+import { tierOf } from "./bond.js";
+import { addBond } from "./state.js";
 
 /** @typedef {import('./state.js').GameState} GameState */
 
@@ -20,7 +20,8 @@ export function lanternReady(state) {
  * @param {GameState} state
  */
 export function nextGoal(state) {
-  if (state.lanternLit || state.relaxMode) return 'Enjoy the village. No more goals, only cats.';
+  if (state.lanternLit || state.relaxMode)
+    return "Enjoy the village. No more goals, only cats.";
   const nextBuilding = Object.entries(BUILDINGS)
     .filter(([id]) => !state.built[id])
     .sort(([, a], [, b]) => a.cost - b.cost)[0];
@@ -37,7 +38,7 @@ export function nextGoal(state) {
   if (state.memoriesRead.length < BALANCE.memoriesForLantern) {
     return `Read the cats’ memories in the Library: ${state.memoriesRead.length} of ${BALANCE.memoriesForLantern}`;
   }
-  return 'Climb to the Lantern tonight and light it';
+  return "Climb to the Lantern tonight and light it";
 }
 
 /**

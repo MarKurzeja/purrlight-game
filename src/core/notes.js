@@ -2,10 +2,10 @@
  * Daily notes: three small goals each day (a guided tutorial on day one), paid in Purrs.
  * Notes advance when the game publishes matching events, such as "fish" or "pet".
  */
-import { BALANCE } from '../config.js';
-import { CAT_BY_ID } from '../data/cats.js';
-import { shuffled } from './random.js';
-import { isWary, presentCats, purrMultiplier } from './state.js';
+import { BALANCE } from "../config.js";
+import { CAT_BY_ID } from "../data/cats.js";
+import { shuffled } from "./random.js";
+import { isWary, presentCats, purrMultiplier } from "./state.js";
 
 /**
  * @typedef {import('./state.js').GameState} GameState
@@ -15,13 +15,13 @@ import { isWary, presentCats, purrMultiplier } from './state.js';
 
 /** Events that can only happen once the day has started (cats sleep at dawn). */
 export const DAYTIME_EVENTS = Object.freeze([
-  'feed',
-  'coax',
-  'pet',
-  'play',
-  'wish',
-  'photo',
-  'favourite',
+  "feed",
+  "coax",
+  "pet",
+  "play",
+  "wish",
+  "photo",
+  "favourite",
 ]);
 
 /**
@@ -31,68 +31,107 @@ export const DAYTIME_EVENTS = Object.freeze([
  */
 const NOTE_TEMPLATES = [
   {
-    event: 'fish',
+    event: "fish",
     amount: [1, 2],
-    target: 'lake',
-    label: (n) => (n > 1 ? `Catch ${n} fish at the lake` : 'Catch a fish at the lake'),
-  },
-  { event: 'gather', amount: [3, 5], target: 'item', label: (n) => `Gather ${n} things at dawn` },
-  { event: 'wish', amount: [2, 3], target: 'wish', label: (n) => `Grant ${n} cat wishes` },
-  {
-    event: 'pet',
-    amount: [1, 2],
-    target: 'friendly',
-    label: (n) => (n > 1 ? `Win ${n} petting sessions` : 'Win a petting session'),
+    target: "lake",
+    label: (n) =>
+      n > 1 ? `Catch ${n} fish at the lake` : "Catch a fish at the lake",
   },
   {
-    event: 'play',
-    amount: [1, 2],
-    target: 'friendly',
-    label: (n) => (n > 1 ? `Play ${n} games with your cats` : 'Play a game with a cat'),
+    event: "gather",
+    amount: [3, 5],
+    target: "item",
+    label: (n) => `Gather ${n} things at dawn`,
   },
-  { event: 'milk', amount: [1, 1], target: 'goat', label: () => 'Milk Clover the goat' },
   {
-    event: 'coax',
+    event: "wish",
+    amount: [2, 3],
+    target: "wish",
+    label: (n) => `Grant ${n} cat wishes`,
+  },
+  {
+    event: "pet",
+    amount: [1, 2],
+    target: "friendly",
+    label: (n) =>
+      n > 1 ? `Win ${n} petting sessions` : "Win a petting session",
+  },
+  {
+    event: "play",
+    amount: [1, 2],
+    target: "friendly",
+    label: (n) =>
+      n > 1 ? `Play ${n} games with your cats` : "Play a game with a cat",
+  },
+  {
+    event: "milk",
     amount: [1, 1],
-    target: 'wary',
-    label: () => 'Win over a wary cat by sitting quietly',
-    available: (state) => presentCats(state).some((cat) => isWary(state, cat.id)),
+    target: "goat",
+    label: () => "Milk Clover the goat",
   },
   {
-    event: 'favourite',
+    event: "coax",
     amount: [1, 1],
-    target: 'cat',
-    label: () => 'Discover a cat’s favourite food',
+    target: "wary",
+    label: () => "Win over a wary cat by sitting quietly",
+    available: (state) =>
+      presentCats(state).some((cat) => isWary(state, cat.id)),
+  },
+  {
+    event: "favourite",
+    amount: [1, 1],
+    target: "cat",
+    label: () => "Discover a cat’s favourite food",
     available: (state) =>
       presentCats(state).some((cat) =>
-        CAT_BY_ID[cat.id].loves.some((food) => state.cats[cat.id].tastes[food] !== 'love'),
+        CAT_BY_ID[cat.id].loves.some(
+          (food) => state.cats[cat.id].tastes[food] !== "love",
+        ),
       ),
   },
   {
-    event: 'photo',
+    event: "photo",
     amount: [1, 2],
-    target: 'cat',
-    label: (n) => (n > 1 ? `Take ${n} new photos for the album` : 'Take a new photo for the album'),
+    target: "cat",
+    label: (n) =>
+      n > 1
+        ? `Take ${n} new photos for the album`
+        : "Take a new photo for the album",
   },
 ];
 
 /** The guided first day. Order matters: the marker follows the first unfinished note. */
 const FIRST_DAY_NOTES = [
-  { event: 'cast', need: 1, label: 'Walk left to the lake and cast a line', target: 'lake' },
   {
-    event: 'gather',
-    need: 2,
-    label: 'Pick up 2 things lying around: herbs or stones',
-    target: 'item',
-  },
-  { event: 'feed', need: 1, label: 'Start the day, then feed Biscuit', target: 'cat:biscuit' },
-  {
-    event: 'coax',
+    event: "cast",
     need: 1,
-    label: 'Sit quietly near a wary cat (Q) until it trusts you',
-    target: 'wary',
+    label: "Walk left to the lake and cast a line",
+    target: "lake",
   },
-  { event: 'pet', need: 1, label: 'Pet Biscuit: find his sweet spot', target: 'cat:biscuit' },
+  {
+    event: "gather",
+    need: 2,
+    label: "Pick up 2 things lying around: herbs or stones",
+    target: "item",
+  },
+  {
+    event: "feed",
+    need: 1,
+    label: "Start the day, then feed Biscuit",
+    target: "cat:biscuit",
+  },
+  {
+    event: "coax",
+    need: 1,
+    label: "Sit quietly near a wary cat (Q) until it trusts you",
+    target: "wary",
+  },
+  {
+    event: "pet",
+    need: 1,
+    label: "Pet Biscuit: find his sweet spot",
+    target: "cat:biscuit",
+  },
 ];
 
 /**
@@ -105,9 +144,15 @@ export function createDailyNotes(state, rng) {
   /** @type {DailyNote[]} */
   let notes;
   if (state.day === 1) {
-    notes = FIRST_DAY_NOTES.map((n) => ({ ...n, have: 0, reward: Math.round(6 * multiplier) }));
+    notes = FIRST_DAY_NOTES.map((n) => ({
+      ...n,
+      have: 0,
+      reward: Math.round(6 * multiplier),
+    }));
   } else {
-    const candidates = NOTE_TEMPLATES.filter((t) => !t.available || t.available(state));
+    const candidates = NOTE_TEMPLATES.filter(
+      (t) => !t.available || t.available(state),
+    );
     notes = shuffled(rng, candidates)
       .slice(0, 3)
       .map((t) => {
@@ -143,7 +188,10 @@ export function recordEvent(state, event, amount = 1) {
       result.completed.push(note);
     }
   }
-  if (!state.tasks.bonusPaid && state.tasks.notes.every((n) => n.have >= n.need)) {
+  if (
+    !state.tasks.bonusPaid &&
+    state.tasks.notes.every((n) => n.have >= n.need)
+  ) {
     state.tasks.bonusPaid = true;
     result.bonus = Math.round(BALANCE.allNotesBonus * purrMultiplier(state));
     state.purrs += result.bonus;
@@ -158,8 +206,10 @@ export function recordEvent(state, event, amount = 1) {
  * @returns {DailyNote | null}
  */
 export function currentNote(state) {
-  const open = state.tasks ? state.tasks.notes.filter((n) => n.have < n.need) : [];
-  if (state.phase === 'dawn') {
+  const open = state.tasks
+    ? state.tasks.notes.filter((n) => n.have < n.need)
+    : [];
+  if (state.phase === "dawn") {
     const doable = open.find((n) => !DAYTIME_EVENTS.includes(n.event));
     if (doable) return doable;
   }

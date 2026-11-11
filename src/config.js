@@ -26,7 +26,7 @@ export const WORLD_ORIGIN = Object.freeze({ x: 740, y: 245 });
 export const DAWN_SECONDS = 110;
 export const DAY_SECONDS = 230;
 
-export const SAVE_KEY = 'purrlight.save.v3';
+export const SAVE_KEY = "purrlight.save.v3";
 export const SAVE_VERSION = 3;
 
 export const BALANCE = Object.freeze({

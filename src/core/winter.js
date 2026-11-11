@@ -1,15 +1,17 @@
 /** Winter: light fires at night and split the cats between them. */
-import { BALANCE } from '../config.js';
-import { FIRES } from '../data/village.js';
-import { presentCats } from './state.js';
+import { BALANCE } from "../config.js";
+import { FIRES } from "../data/village.js";
+import { presentCats } from "./state.js";
 
 /** @typedef {import('./state.js').GameState} GameState */
 
 /** Fires available to light (the bonfire plus one per rebuilt building). @param {GameState} state */
-export const availableFires = (state) => FIRES.filter((f) => !f.needs || state.built[f.needs]);
+export const availableFires = (state) =>
+  FIRES.filter((f) => !f.needs || state.built[f.needs]);
 
 /** @param {GameState} state @param {string} catId */
-export const fireOf = (state, catId) => state.fireAssignments[catId] ?? 'bonfire';
+export const fireOf = (state, catId) =>
+  state.fireAssignments[catId] ?? "bonfire";
 
 /** Cats assigned to a fire, in village order. @param {GameState} state @param {string} fireId */
 export const catsAtFire = (state, fireId) =>
@@ -22,7 +24,7 @@ export const catsAtFire = (state, fireId) =>
  */
 export function assignFire(state, catId, fireId) {
   if (!availableFires(state).some((f) => f.id === fireId)) {
-    return { ok: false, reason: 'No such fire.' };
+    return { ok: false, reason: "No such fire." };
   }
   if (catsAtFire(state, fireId).length >= BALANCE.catsPerFire) {
     return {
@@ -31,7 +33,7 @@ export function assignFire(state, catId, fireId) {
     };
   }
   state.fireAssignments[catId] = fireId;
-  return { ok: true, reason: '' };
+  return { ok: true, reason: "" };
 }
 
 /** @param {GameState} state @param {string} fireId */

@@ -10,20 +10,21 @@
  * name in the project must be unique. The bundler checks that, and that every imported name is
  * actually exported by its module.
  */
-import { readFileSync } from 'node:fs';
-import { dirname, relative, resolve } from 'node:path';
-import vm from 'node:vm';
+import { readFileSync } from "node:fs";
+import { dirname, relative, resolve } from "node:path";
+import vm from "node:vm";
 
-const IMPORT_RE = /^import\s*\{([^}]*)\}\s*from\s*['"](\.{1,2}\/[^'"]+)['"];?\s*$/gm;
+const IMPORT_RE =
+  /^import\s*\{([^}]*)\}\s*from\s*['"](\.{1,2}\/[^'"]+)['"];?\s*$/gm;
 const DECLARATION_RE =
   /^(export\s+)?(?:async\s+)?(?:function\*?|const|let|class)\s+([A-Za-z_$][\w$]*)/gm;
 const FORBIDDEN = [
-  [/^export\s+default\b/m, 'default exports'],
-  [/^export\s*\{/m, 'export lists'],
-  [/^export\s*\*/m, 're-exports'],
-  [/^export\s+let\b/m, 'exported let (live bindings are not supported)'],
-  [/^import\s+[^{\s]/m, 'default or namespace imports'],
-  [/\bimport\s*\(/, 'dynamic import()'],
+  [/^export\s+default\b/m, "default exports"],
+  [/^export\s*\{/m, "export lists"],
+  [/^export\s*\*/m, "re-exports"],
+  [/^export\s+let\b/m, "exported let (live bindings are not supported)"],
+  [/^import\s+[^{\s]/m, "default or namespace imports"],
+  [/\bimport\s*\(/, "dynamic import()"],
 ];
 
 /**
@@ -33,23 +34,25 @@ const FORBIDDEN = [
 
 /** Removes block and line comments, so JSDoc types such as import('x') are not mistaken for code. */
 function withoutComments(source) {
-  return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 }
 
 /** @param {string} path @returns {ModuleInfo} */
 function readModule(path) {
-  const source = readFileSync(path, 'utf8');
+  const source = readFileSync(path, "utf8");
   const code = withoutComments(source);
   for (const [pattern, what] of FORBIDDEN) {
-    if (pattern.test(code)) throw new Error(`${path}: ${what} are not supported by the bundler`);
+    if (pattern.test(code))
+      throw new Error(`${path}: ${what} are not supported by the bundler`);
   }
   const imports = [...source.matchAll(IMPORT_RE)].map((m) => {
     const names = m[1]
-      .split(',')
+      .split(",")
       .map((n) => n.trim())
       .filter(Boolean);
     const renamed = names.find((n) => /\sas\s/.test(n));
-    if (renamed) throw new Error(`${path}: renamed import "${renamed}" is not supported`);
+    if (renamed)
+      throw new Error(`${path}: renamed import "${renamed}" is not supported`);
     return { names, from: resolve(dirname(path), m[2]) };
   });
   const declarations = [...source.matchAll(DECLARATION_RE)];
@@ -91,7 +94,10 @@ export function bundle(entry) {
   for (const path of order) {
     for (const declared of modules.get(path)?.declared ?? []) {
       const owner = owners.get(declared);
-      if (owner) errors.push(`"${declared}" is declared in both ${owner} and ${name(path)}`);
+      if (owner)
+        errors.push(
+          `"${declared}" is declared in both ${owner} and ${name(path)}`,
+        );
       else owners.set(declared, name(path));
     }
   }
@@ -100,22 +106,25 @@ export function bundle(entry) {
       const exported = modules.get(from)?.exported ?? [];
       for (const n of names) {
         if (!exported.includes(n)) {
-          errors.push(`${name(path)} imports "${n}" but ${name(from)} does not export it`);
+          errors.push(
+            `${name(path)} imports "${n}" but ${name(from)} does not export it`,
+          );
         }
       }
     }
   }
-  if (errors.length) throw new Error(`Bundling failed:\n  ${errors.join('\n  ')}`);
+  if (errors.length)
+    throw new Error(`Bundling failed:\n  ${errors.join("\n  ")}`);
 
   const body = order
     .map((path) => {
       const source = /** @type {ModuleInfo} */ (modules.get(path)).source
-        .replace(IMPORT_RE, '')
-        .replace(/^export\s+/gm, '');
+        .replace(IMPORT_RE, "")
+        .replace(/^export\s+/gm, "");
       return `// ---- ${name(path)} ----\n${source.trim()}\n`;
     })
-    .join('\n');
+    .join("\n");
   const code = `(() => {\n'use strict';\n${body}\n})();\n`;
-  new vm.Script(code, { filename: 'bundle.js' }); // throws on a syntax error
+  new vm.Script(code, { filename: "bundle.js" }); // throws on a syntax error
   return { code, modules: order.map(name) };
 }

@@ -2,8 +2,8 @@
  * Time-of-day lighting for the 3D scene: four presets (dawn, day, dusk, night) and smooth
  * blends between them as the day's clock runs.
  */
-import { clamp, lerp } from '../core/math.js';
-import { GRADE } from './palettes.js';
+import { clamp, lerp } from "../core/math.js";
+import { GRADE } from "./palettes.js";
 
 /**
  * @typedef {import('../engine/gl/renderer.js').Lighting} GlLighting
@@ -82,13 +82,21 @@ export const LIGHT_PRESETS = Object.freeze([
 export function lightingFor(state) {
   if (!state) return { from: GRADE.dusk, to: GRADE.night, blend: 0.35 };
   switch (state.phase) {
-    case 'dawn':
-      return { from: GRADE.dawn, to: GRADE.day, blend: Math.pow(clamp(state.clock), 1.6) };
-    case 'day':
+    case "dawn":
+      return {
+        from: GRADE.dawn,
+        to: GRADE.day,
+        blend: Math.pow(clamp(state.clock), 1.6),
+      };
+    case "day":
       return state.clock < 0.72
         ? { from: GRADE.day, to: GRADE.day, blend: 0 }
-        : { from: GRADE.day, to: GRADE.dusk, blend: (state.clock - 0.72) / 0.28 };
-    case 'evening':
+        : {
+            from: GRADE.day,
+            to: GRADE.dusk,
+            blend: (state.clock - 0.72) / 0.28,
+          };
+    case "evening":
       return { from: GRADE.dusk, to: GRADE.night, blend: 0.35 };
     default:
       return { from: GRADE.night, to: GRADE.night, blend: 0 };
@@ -97,7 +105,8 @@ export function lightingFor(state) {
 
 /** How dark it is, 0 (day) to 1 (night). Dusk counts as partly dark. @param {TimeOfDay} t */
 export function darkness(t) {
-  const level = (grade) => (grade === GRADE.night ? 1 : grade === GRADE.dusk ? 0.45 : 0);
+  const level = (grade) =>
+    grade === GRADE.night ? 1 : grade === GRADE.dusk ? 0.45 : 0;
   return lerp(level(t.from), level(t.to), t.blend);
 }
 
@@ -110,7 +119,7 @@ const mixVec = (a, b, t) =>
  * @param {string} [seasonId]
  * @returns {GlLighting}
  */
-export function blendLighting(t, seasonId = 'summer') {
+export function blendLighting(t, seasonId = "summer") {
   const a = LIGHT_PRESETS[t.from];
   const b = LIGHT_PRESETS[t.to];
   const k = t.blend;
@@ -118,9 +127,11 @@ export function blendLighting(t, seasonId = 'summer') {
   const out = {};
   for (const key of Object.keys(a)) {
     const value = a[key];
-    out[key] = Array.isArray(value) ? mixVec(value, b[key], k) : lerp(value, b[key], k);
+    out[key] = Array.isArray(value)
+      ? mixVec(value, b[key], k)
+      : lerp(value, b[key], k);
   }
-  if (seasonId === 'winter') {
+  if (seasonId === "winter") {
     out.ground = mixVec(out.ground, out.sky, 0.6);
     out.fog = mixVec(out.fog, [0.92, 0.94, 1], 0.25 * (1 - darkness(t)));
   }

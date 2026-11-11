@@ -2,14 +2,14 @@
  * The evening gathering and the passage of night into the next morning.
  * These are the two big state transitions of each day.
  */
-import { BALANCE } from '../config.js';
-import { CAT_BY_ID, PERSONALITIES } from '../data/cats.js';
-import { ITEMS } from '../data/items.js';
-import { BUILDINGS } from '../data/village.js';
-import { tierOf } from './bond.js';
-import { createDailyNotes } from './notes.js';
-import { pickFrom } from './random.js';
-import { CATNIP_GROW_DAYS } from './shop.js';
+import { BALANCE } from "../config.js";
+import { CAT_BY_ID, PERSONALITIES } from "../data/cats.js";
+import { ITEMS } from "../data/items.js";
+import { BUILDINGS } from "../data/village.js";
+import { tierOf } from "./bond.js";
+import { createDailyNotes } from "./notes.js";
+import { pickFrom } from "./random.js";
+import { CATNIP_GROW_DAYS } from "./shop.js";
 import {
   addToBag,
   changeWarmth,
@@ -18,9 +18,9 @@ import {
   presentCats,
   purrMultiplier,
   seasonLength,
-} from './state.js';
-import { rollWishes } from './wishes.js';
-import { keptWarmByFire } from './winter.js';
+} from "./state.js";
+import { rollWishes } from "./wishes.js";
+import { keptWarmByFire } from "./winter.js";
 
 /**
  * @typedef {import('./state.js').GameState} GameState
@@ -33,7 +33,7 @@ import { keptWarmByFire } from './winter.js';
  * @returns {Set<string>}
  */
 export function catsInTheSun(state) {
-  if (currentSeason(state).id !== 'summer') return new Set();
+  if (currentSeason(state).id !== "summer") return new Set();
   const byWarmth = presentCats(state)
     .map((c) => c.id)
     .sort((a, b) => state.cats[b].warmth - state.cats[a].warmth);
@@ -55,7 +55,10 @@ export function eveningGathering(state, rng) {
     const tier = tierOf(cat.bond);
     let purrs = isWary(state, c.id)
       ? 1
-      : (BALANCE.eveningBasePurrs + cat.warmth / BALANCE.eveningWarmthDivisor + tier) * multiplier;
+      : (BALANCE.eveningBasePurrs +
+          cat.warmth / BALANCE.eveningWarmthDivisor +
+          tier) *
+        multiplier;
     if (sunny.has(c.id)) purrs *= 0.7;
     purrs = Math.max(1, Math.round(purrs));
 
@@ -85,16 +88,27 @@ export function eveningGathering(state, rng) {
  */
 export function overnightLoss(state, catId, sunny) {
   if (state.relaxMode || state.lanternLit) return 0;
-  if (currentSeason(state).id === 'winter') {
-    return keptWarmByFire(state, catId) ? BALANCE.winterLitLoss : BALANCE.winterColdLoss;
+  if (currentSeason(state).id === "winter") {
+    return keptWarmByFire(state, catId)
+      ? BALANCE.winterLitLoss
+      : BALANCE.winterColdLoss;
   }
-  let loss = Math.max(BALANCE.overnightLossFloor, BALANCE.overnightLoss - state.decor.length);
+  let loss = Math.max(
+    BALANCE.overnightLossFloor,
+    BALANCE.overnightLoss - state.decor.length,
+  );
   if (sunny.has(catId)) loss += BALANCE.summerSunLoss;
   return loss;
 }
 
 /** Items a trusting cat may leave at your door. */
-const GIFTS = /** @type {const} */ (['sardine', 'herb', 'stone', 'wood', 'trout']);
+const GIFTS = /** @type {const} */ ([
+  "sardine",
+  "herb",
+  "stone",
+  "wood",
+  "trout",
+]);
 
 /**
  * Night passes: cats cool down, counters reset, the season may turn, and new cats, crops,
@@ -128,7 +142,7 @@ export function passNight(state, rng) {
     state.season = (state.season + 1) % 4;
     newSeason = true;
   }
-  state.phase = 'dawn';
+  state.phase = "dawn";
   state.clock = 0;
 
   const notes = [];
@@ -145,8 +159,8 @@ export function passNight(state, rng) {
 
   state.plots = state.plots.map((planted) => {
     if (planted && state.day >= planted + CATNIP_GROW_DAYS) {
-      addToBag(state, 'catnip');
-      notes.push('Catnip is ready in the greenhouse. +1 Catnip.');
+      addToBag(state, "catnip");
+      notes.push("Catnip is ready in the greenhouse. +1 Catnip.");
       return 0;
     }
     return planted;
@@ -159,11 +173,15 @@ export function passNight(state, rng) {
       .slice(0, 3);
     if (sunbathers.length) {
       const earned = Math.round(
-        sunbathers.reduce((sum, c) => sum + 3 + tierOf(state.cats[c.id].bond), 0) *
-          purrMultiplier(state),
+        sunbathers.reduce(
+          (sum, c) => sum + 3 + tierOf(state.cats[c.id].bond),
+          0,
+        ) * purrMultiplier(state),
       );
       state.purrs += earned;
-      const names = sunbathers.map((c) => state.cats[c.id].name.split(' ').pop()).join(', ');
+      const names = sunbathers
+        .map((c) => state.cats[c.id].name.split(" ").pop())
+        .join(", ");
       notes.push(`${names} caught the sunbeams at dawn. +${earned} Purrs.`);
     }
   }
@@ -172,7 +190,9 @@ export function passNight(state, rng) {
     if (tierOf(state.cats[c.id].bond) >= 3 && rng() < 0.5) {
       const gift = pickFrom(rng, GIFTS);
       addToBag(state, gift);
-      notes.push(`${state.cats[c.id].name} left a gift at your door: ${ITEMS[gift].name}.`);
+      notes.push(
+        `${state.cats[c.id].name} left a gift at your door: ${ITEMS[gift].name}.`,
+      );
     }
   }
 

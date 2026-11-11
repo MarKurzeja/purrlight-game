@@ -34,15 +34,16 @@ img {
   --peri: #7fa6b8;
   --red: #c8423c;
   --wood: #6e4830;
-  --pixel: 'Pixelify Sans', ui-monospace, monospace;
-  --hand: 'Mali', 'Trebuchet MS', sans-serif;
+  --pixel: "Pixelify Sans", ui-monospace, monospace;
+  --hand: "Mali", "Trebuchet MS", sans-serif;
 }
 html,
 body {
   height: 100%;
 }
 body {
-  background: linear-gradient(180deg, #bcd8ea 0%, #e4eef2 50%, #efe3cf 100%) fixed;
+  background: linear-gradient(180deg, #bcd8ea 0%, #e4eef2 50%, #efe3cf 100%)
+    fixed;
   color: var(--ink);
   font-family: var(--hand);
   font-size: 15px;
@@ -149,7 +150,7 @@ body {
 }
 /* A friendly note where the 3D view would be, if the browser has no WebGL 2. */
 .no-webgl #stage::after {
-  content: 'Purrlight needs WebGL 2 to draw its valley. Try a recent Chrome, Firefox, Safari or Edge.';
+  content: "Purrlight needs WebGL 2 to draw its valley. Try a recent Chrome, Firefox, Safari or Edge.";
   position: absolute;
   inset: 30% 15% auto;
   color: #fff;

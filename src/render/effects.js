@@ -1,8 +1,8 @@
 /** Small animated effects: campfire, chimney smoke, weather, particles, bubbles and markers. */
-import { VIEW_HEIGHT, VIEW_WIDTH } from '../config.js';
-import { pickRandom, rand } from '../core/random.js';
-import { ellipse, makeCanvas, rect } from '../engine/canvas.js';
-import { drawHeart, itemIcon } from './sprites.js';
+import { VIEW_HEIGHT, VIEW_WIDTH } from "../config.js";
+import { pickRandom, rand } from "../core/random.js";
+import { ellipse, makeCanvas, rect } from "../engine/canvas.js";
+import { drawHeart, itemIcon } from "./sprites.js";
 
 /**
  * Projects a game point (x, y, height above the ground, all in game pixels) to the HUD.
@@ -52,10 +52,15 @@ const WEATHER_DENSITY = { spring: 12, summer: 8, autumn: 22, winter: 50 };
 /** @param {Flake[]} flakes */
 export function updateWeather(flakes, seasonId, dt, time) {
   if (flakes.length < WEATHER_DENSITY[seasonId]) {
-    flakes.push({ x: rand(VIEW_WIDTH + 40), y: -6, speed: rand(10, 24), phase: rand(7) });
+    flakes.push({
+      x: rand(VIEW_WIDTH + 40),
+      y: -6,
+      speed: rand(10, 24),
+      phase: rand(7),
+    });
   }
   for (const f of flakes) {
-    f.y += f.speed * dt * (seasonId === 'winter' ? 1.1 : 0.8);
+    f.y += f.speed * dt * (seasonId === "winter" ? 1.1 : 0.8);
     f.x += Math.sin(time + f.phase) * 0.3 - 0.15;
   }
   return flakes.filter((f) => f.y < VIEW_HEIGHT + 8);
@@ -65,21 +70,28 @@ export function updateWeather(flakes, seasonId, dt, time) {
 export function drawWeather(ctx, flakes, seasonId, time) {
   for (const f of flakes) {
     switch (seasonId) {
-      case 'spring':
-        rect(ctx, f.x, f.y, 2, 1, '#fbe0ea');
+      case "spring":
+        rect(ctx, f.x, f.y, 2, 1, "#fbe0ea");
         break;
-      case 'summer': {
+      case "summer": {
         const y = f.y * 0.6 + 150; // fireflies hover over the meadow
-        rect(ctx, f.x, y, 1, 1, '#fff');
-        rect(ctx, f.x + (Math.sin(time * 9 + f.phase) > 0 ? 1 : -1), y, 1, 1, '#f7d84e');
+        rect(ctx, f.x, y, 1, 1, "#fff");
+        rect(
+          ctx,
+          f.x + (Math.sin(time * 9 + f.phase) > 0 ? 1 : -1),
+          y,
+          1,
+          1,
+          "#f7d84e",
+        );
         break;
       }
-      case 'autumn':
-        rect(ctx, f.x, f.y, 1, 2, '#f0c04a');
+      case "autumn":
+        rect(ctx, f.x, f.y, 1, 2, "#f0c04a");
         break;
       default: {
         const size = f.phase > 4 ? 2 : 1;
-        rect(ctx, f.x, f.y, size, size, '#fff');
+        rect(ctx, f.x, f.y, size, size, "#fff");
       }
     }
   }
@@ -94,7 +106,15 @@ export function drawWeather(ctx, flakes, seasonId, time) {
  */
 
 /** @param {Particle[]} particles @param {Particle['kind']} kind */
-export function spawnBurst(particles, x, y, color, count = 8, kind = 'spark', height = 12) {
+export function spawnBurst(
+  particles,
+  x,
+  y,
+  color,
+  count = 8,
+  kind = "spark",
+  height = 12,
+) {
   for (let i = 0; i < count; i++) {
     particles.push({
       x,
@@ -123,7 +143,7 @@ export function spawnDust(particles, x, y, color) {
     age: 0,
     life: 0.5,
     color,
-    kind: 'dust',
+    kind: "dust",
   });
 }
 
@@ -134,7 +154,7 @@ export function updateParticles(particles, dt) {
     p.x += p.vx * dt;
     p.y += p.vy * dt;
     p.height += p.vh * dt;
-    if (p.kind !== 'dust') p.vh -= 60 * dt;
+    if (p.kind !== "dust") p.vh -= 60 * dt;
   }
   return particles.filter((p) => p.age < p.life);
 }
@@ -145,12 +165,12 @@ export function drawParticles(ctx, particles, project) {
     const fade = 1 - p.age / p.life;
     const at = project(p.x, p.y, Math.max(0, p.height));
     if (!at.visible) continue;
-    if (p.kind === 'heart') {
+    if (p.kind === "heart") {
       ctx.globalAlpha = fade;
       drawHeart(ctx, at.x, at.y, p.color);
     } else {
       ctx.globalAlpha = fade * 0.7;
-      rect(ctx, at.x, at.y, p.kind === 'dust' ? 2 : 1, 1, p.color);
+      rect(ctx, at.x, at.y, p.kind === "dust" ? 2 : 1, 1, p.color);
     }
   }
   ctx.globalAlpha = 1;
@@ -166,26 +186,27 @@ export function drawWishBubble(ctx, x, y, wish, time, alpha = 1) {
   x = Math.round(x);
   y = Math.round(y + Math.sin(time * 3) * 1.2);
   ctx.globalAlpha = alpha;
-  rect(ctx, x - 8, y - 13, 17, 12, '#33415e');
-  rect(ctx, x - 7, y - 12, 15, 10, '#ffffff');
-  rect(ctx, x - 1, y - 2, 3, 2, '#33415e');
-  rect(ctx, x, y - 2, 1, 1, '#fff');
+  rect(ctx, x - 8, y - 13, 17, 12, "#33415e");
+  rect(ctx, x - 7, y - 12, 15, 10, "#ffffff");
+  rect(ctx, x - 1, y - 2, 3, 2, "#33415e");
+  rect(ctx, x, y - 2, 1, 1, "#fff");
   switch (wish) {
-    case 'food':
-      ctx.drawImage(itemIcon('sardine'), x - 5, y - 11);
+    case "food":
+      ctx.drawImage(itemIcon("sardine"), x - 5, y - 11);
       break;
-    case 'pets':
-      rect(ctx, x - 3, y - 8, 6, 4, '#f0c4a0');
-      for (const finger of [-3, -1, 1]) rect(ctx, x + finger, y - 11, 1, 3, '#f0c4a0');
-      rect(ctx, x + 3, y - 9, 1, 2, '#f0c4a0');
+    case "pets":
+      rect(ctx, x - 3, y - 8, 6, 4, "#f0c4a0");
+      for (const finger of [-3, -1, 1])
+        rect(ctx, x + finger, y - 11, 1, 3, "#f0c4a0");
+      rect(ctx, x + 3, y - 9, 1, 2, "#f0c4a0");
       break;
-    case 'play':
-      ellipse(ctx, x, y - 7, 4, 4, '#8c86c0');
-      rect(ctx, x - 3, y - 7, 7, 1, '#6a64a0');
-      rect(ctx, x + 3, y - 4, 3, 1, '#8c86c0');
+    case "play":
+      ellipse(ctx, x, y - 7, 4, 4, "#8c86c0");
+      rect(ctx, x - 3, y - 7, 7, 1, "#6a64a0");
+      rect(ctx, x + 3, y - 4, 3, 1, "#8c86c0");
       break;
     default:
-      for (const d of [-4, 0, 4]) rect(ctx, x + d - 1, y - 7, 2, 2, '#33415e');
+      for (const d of [-4, 0, 4]) rect(ctx, x + d - 1, y - 7, 2, 2, "#33415e");
   }
   ctx.globalAlpha = 1;
 }
@@ -197,13 +218,15 @@ export function drawWishBubble(ctx, x, y, wish, time, alpha = 1) {
 export function drawGuideMarker(ctx, x, y, direction, time) {
   if (direction) {
     x += direction * Math.sin(time * 6) * 2;
-    rect(ctx, x - direction * 4, y - 2, 5, 5, '#c8423c');
-    rect(ctx, x, y - 6, 1, 13, '#c8423c');
-    for (let i = 1; i < 7; i++) rect(ctx, x + direction * i, y - 6 + i, 1, 13 - 2 * i, '#c8423c');
-    rect(ctx, x - direction * 5, y - 2, 1, 5, '#fff');
+    rect(ctx, x - direction * 4, y - 2, 5, 5, "#c8423c");
+    rect(ctx, x, y - 6, 1, 13, "#c8423c");
+    for (let i = 1; i < 7; i++)
+      rect(ctx, x + direction * i, y - 6 + i, 1, 13 - 2 * i, "#c8423c");
+    rect(ctx, x - direction * 5, y - 2, 1, 5, "#fff");
   } else {
-    for (let i = 0; i < 5; i++) rect(ctx, x - 4 + i, y + i, 9 - 2 * i, 1, '#c8423c');
-    rect(ctx, x - 5, y - 1, 11, 1, '#fff');
+    for (let i = 0; i < 5; i++)
+      rect(ctx, x - 4 + i, y + i, 9 - 2 * i, 1, "#c8423c");
+    rect(ctx, x - 5, y - 1, 11, 1, "#fff");
   }
 }
 
@@ -235,7 +258,7 @@ export function drawButterflies(ctx, butterflies, project, time) {
     const y = Math.round(at.y);
     if (!at.visible || x < -4 || x > VIEW_WIDTH + 4) continue;
     const open = Math.sin(time * 18 + b.x) > 0;
-    rect(ctx, x, y, 1, 2, '#33415e');
+    rect(ctx, x, y, 1, 2, "#33415e");
     rect(ctx, x - (open ? 2 : 1), y - (open ? 0 : 1), open ? 2 : 1, 2, b.color);
     rect(ctx, x + 1, y - (open ? 0 : 1), open ? 2 : 1, 2, b.color);
   }

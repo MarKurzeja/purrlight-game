@@ -2,10 +2,10 @@
  * Petting, playing, lap time, names and photos: everything you do with one cat.
  * These functions record outcomes; the minigames themselves live in petting.js and the scenes.
  */
-import { BALANCE } from '../config.js';
-import { CAT_BY_ID } from '../data/cats.js';
-import { tierOf } from './bond.js';
-import { addBond, changeWarmth, isWary } from './state.js';
+import { BALANCE } from "../config.js";
+import { CAT_BY_ID } from "../data/cats.js";
+import { tierOf } from "./bond.js";
+import { addBond, changeWarmth, isWary } from "./state.js";
 
 /** @typedef {import('./state.js').GameState} GameState */
 
@@ -19,17 +19,26 @@ export function availableActions(state, catId) {
   const wary = isWary(state, catId);
   const tier = tierOf(cat.bond);
   /** @param {boolean} ok @param {string} reason */
-  const option = (ok, reason) => ({ ok, reason: ok ? '' : reason });
+  const option = (ok, reason) => ({ ok, reason: ok ? "" : reason });
   return {
-    feed: option(cat.mealsToday < BALANCE.mealsPerDay, 'Full today'),
+    feed: option(cat.mealsToday < BALANCE.mealsPerDay, "Full today"),
     pet: option(
       !wary && cat.petsToday < BALANCE.petsPerDay,
-      wary ? 'Too wary' : 'Enough for today',
+      wary ? "Too wary" : "Enough for today",
     ),
-    play: option(!wary && cat.gamesToday < BALANCE.gamesPerDay, wary ? 'Too wary' : 'Tired today'),
-    walk: { unlocked: tier >= 1, ...option(!wary, 'Too wary') },
-    lap: { unlocked: tier >= 2, ...option(!wary && cat.lapDay < state.day, 'Done today') },
-    secret: { unlocked: tier >= 4 && !cat.secretFound, ...option(!wary, 'Too wary') },
+    play: option(
+      !wary && cat.gamesToday < BALANCE.gamesPerDay,
+      wary ? "Too wary" : "Tired today",
+    ),
+    walk: { unlocked: tier >= 1, ...option(!wary, "Too wary") },
+    lap: {
+      unlocked: tier >= 2,
+      ...option(!wary && cat.lapDay < state.day, "Done today"),
+    },
+    secret: {
+      unlocked: tier >= 4 && !cat.secretFound,
+      ...option(!wary, "Too wary"),
+    },
   };
 }
 
@@ -69,7 +78,9 @@ export function recordPlay(state, catId, toy, score) {
   const favourite = CAT_BY_ID[catId].favouriteToy === toy;
   cat.gamesToday += 1;
   const base = 8 + Math.min(1, Math.max(0, score)) * 18;
-  const warmth = Math.round(base * (favourite ? 1.5 : 1) * (cat.gamesToday > 1 ? 0.6 : 1));
+  const warmth = Math.round(
+    base * (favourite ? 1.5 : 1) * (cat.gamesToday > 1 ? 0.6 : 1),
+  );
   const bond = favourite ? BALANCE.playBond.favourite : BALANCE.playBond.other;
   changeWarmth(cat, warmth);
   addBond(state, catId, bond);
@@ -99,15 +110,15 @@ export function lapTime(state, catId) {
 export function nameSuits(personality, name) {
   const n = name.toLowerCase();
   switch (personality) {
-    case 'lazy':
+    case "lazy":
       return /[ou]/.test(n) && n.length < 9;
-    case 'hunter':
+    case "hunter":
       return /[ktx]/.test(n);
-    case 'aristocrat':
+    case "aristocrat":
       return n.length >= 8;
-    case 'bandit':
+    case "bandit":
       return n.length <= 5;
-    case 'shy':
+    case "shy":
       return /[lmn]/.test(n) && !/[kx]/.test(n);
     default:
       return true;
@@ -133,7 +144,13 @@ export function renameCat(state, catId, rawName) {
 }
 
 /** Photo album poses. Wary is a pose of its own. */
-export const PHOTO_POSES = Object.freeze(['wary', 'sit', 'loaf', 'sleep', 'walk']);
+export const PHOTO_POSES = Object.freeze([
+  "wary",
+  "sit",
+  "loaf",
+  "sleep",
+  "walk",
+]);
 
 /**
  * Adds a photo to the album. New photos earn a little.
@@ -175,7 +192,10 @@ export function sitWith(state, catId, seconds) {
   let completedCoax = false;
   if (cat.coaxToday < BALANCE.coaxDailyCap) {
     const before = cat.coaxToday;
-    cat.coaxToday = Math.min(BALANCE.coaxDailyCap, before + seconds * BALANCE.coaxWarmthPerSecond);
+    cat.coaxToday = Math.min(
+      BALANCE.coaxDailyCap,
+      before + seconds * BALANCE.coaxWarmthPerSecond,
+    );
     changeWarmth(cat, cat.coaxToday - before);
     completedCoax = cat.coaxToday >= BALANCE.coaxDailyCap;
   }
@@ -201,8 +221,9 @@ export function sitWith(state, catId, seconds) {
  */
 export function strokeCat(state, catId, seconds) {
   const cat = state.cats[catId];
-  if (isWary(state, catId)) return { ok: false, reason: 'wary' };
-  if (cat.strokeToday >= BALANCE.strokeDailyCap) return { ok: false, reason: 'enough' };
+  if (isWary(state, catId)) return { ok: false, reason: "wary" };
+  if (cat.strokeToday >= BALANCE.strokeDailyCap)
+    return { ok: false, reason: "enough" };
   const warmth = Math.min(
     BALANCE.strokeDailyCap - cat.strokeToday,
     seconds * BALANCE.strokeWarmthPerSecond,
@@ -210,5 +231,9 @@ export function strokeCat(state, catId, seconds) {
   cat.strokeToday += warmth;
   changeWarmth(cat, warmth);
   addBond(state, catId, seconds * BALANCE.strokeBondPerSecond);
-  return { ok: true, warmth, satisfied: cat.strokeToday >= BALANCE.strokeDailyCap };
+  return {
+    ok: true,
+    warmth,
+    satisfied: cat.strokeToday >= BALANCE.strokeDailyCap,
+  };
 }

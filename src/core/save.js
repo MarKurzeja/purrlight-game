@@ -2,9 +2,9 @@
  * Save files: serialisation and migration of older versions.
  * Storage itself (localStorage, cloud) is handled by game/persistence.js.
  */
-import { SAVE_VERSION } from '../config.js';
-import { CATS } from '../data/cats.js';
-import { createInitialState } from './state.js';
+import { SAVE_VERSION } from "../config.js";
+import { CATS } from "../data/cats.js";
+import { createInitialState } from "./state.js";
 
 /** @typedef {import('./state.js').GameState} GameState */
 
@@ -39,7 +39,7 @@ export function parseSave(json) {
  * @returns {GameState | null}
  */
 export function migrateSave(raw) {
-  if (!raw || typeof raw !== 'object') return null;
+  if (!raw || typeof raw !== "object") return null;
   const version = raw.version ?? raw.v;
   if (version === SAVE_VERSION) return withDefaults(raw);
   if (version === 2) return withDefaults(fromVersion2(raw));
@@ -52,10 +52,13 @@ export function migrateSave(raw) {
  * @returns {GameState}
  */
 function withDefaults(raw) {
-  const base = createInitialState(raw.mode === 'short' ? 'short' : 'full');
+  const base = createInitialState(raw.mode === "short" ? "short" : "full");
   const state = { ...base, ...raw, version: SAVE_VERSION };
   state.cats = Object.fromEntries(
-    CATS.map((cat) => [cat.id, { ...base.cats[cat.id], ...(raw.cats?.[cat.id] ?? {}) }]),
+    CATS.map((cat) => [
+      cat.id,
+      { ...base.cats[cat.id], ...(raw.cats?.[cat.id] ?? {}) },
+    ]),
   );
   return state;
 }
@@ -83,7 +86,10 @@ function fromVersion2(old) {
         gamesToday: c.play ?? 0,
         lapDay: c.lap ?? 0,
         photos: Object.fromEntries(
-          Object.keys(c.photos ?? {}).map((pose) => [pose === 'ghost' ? 'wary' : pose, true]),
+          Object.keys(c.photos ?? {}).map((pose) => [
+            pose === "ghost" ? "wary" : pose,
+            true,
+          ]),
         ),
         secretFound: !!c.secret,
         wish: c.wish ?? null,
@@ -114,7 +120,9 @@ function fromVersion2(old) {
     fireAssignments: old.fires ?? {},
     litFires: old.lit ?? {},
     // "biscuit0" became "biscuit:0".
-    memoriesRead: (old.read ?? []).map((/** @type {string} */ key) => key.replace(/(\d+)$/, ':$1')),
+    memoriesRead: (old.read ?? []).map((/** @type {string} */ key) =>
+      key.replace(/(\d+)$/, ":$1"),
+    ),
     relaxMode: !!old.relax,
     lanternLit: !!old.done,
     castsToday: old.casts ?? 0,
@@ -124,12 +132,14 @@ function fromVersion2(old) {
           day: old.tasks.day,
           bonusPaid: !!old.tasks.bonus,
           notes: old.tasks.list.map((/** @type {any} */ n) => ({
-            event: n.ev === 'fav' ? 'favourite' : n.ev,
+            event: n.ev === "fav" ? "favourite" : n.ev,
             need: n.need,
             have: n.have,
             label: n.l,
             target:
-              { pond: 'lake', node: 'item', warm: 'friendly' }[/** @type {string} */ (n.t)] ?? n.t,
+              { pond: "lake", node: "item", warm: "friendly" }[
+                /** @type {string} */ (n.t)
+              ] ?? n.t,
             reward: n.rew,
           })),
         }

@@ -6,17 +6,30 @@
  * Game coordinates: x along the street, y depth (see space.js). Screen coordinates: the
  * 480 x 270 HUD canvas.
  */
-import { VIEW_HEIGHT, VIEW_WIDTH } from '../config.js';
-import { clamp, lerp } from '../core/math.js';
-import { createRenderer } from '../engine/gl/renderer.js';
-import { MeshBuilder } from '../engine/gl/geometry.js';
-import { mat4Identity, mat4Transform } from '../engine/gl/math3d.js';
-import { blendLighting } from './lighting.js';
-import { drawCatModel } from './models.js';
-import { LAKE_SHAPE, WATER_LEVEL, fromX, fromZ, heightAt, worldPoint } from './space.js';
-import { buildClouds, buildForest, buildLake, buildMeadowDetails, buildTerrain } from './valley.js';
-import { buildVillage } from './village3d.js';
-import { LANDMARKS } from '../data/village.js';
+import { VIEW_HEIGHT, VIEW_WIDTH } from "../config.js";
+import { clamp, lerp } from "../core/math.js";
+import { createRenderer } from "../engine/gl/renderer.js";
+import { MeshBuilder } from "../engine/gl/geometry.js";
+import { mat4Identity, mat4Transform } from "../engine/gl/math3d.js";
+import { blendLighting } from "./lighting.js";
+import { drawCatModel } from "./models.js";
+import {
+  LAKE_SHAPE,
+  WATER_LEVEL,
+  fromX,
+  fromZ,
+  heightAt,
+  worldPoint,
+} from "./space.js";
+import {
+  buildClouds,
+  buildForest,
+  buildLake,
+  buildMeadowDetails,
+  buildTerrain,
+} from "./valley.js";
+import { buildVillage } from "./village3d.js";
+import { LANDMARKS } from "../data/village.js";
 
 /**
  * @typedef {import('../engine/gl/renderer.js').Renderer} Renderer
@@ -31,7 +44,14 @@ import { LANDMARKS } from '../data/village.js';
 /** Internal render resolution: twice the HUD, shown with crisp pixels. */
 const RENDER_SCALE = 2;
 const IDENTITY = mat4Identity();
-const EMPTY_VILLAGE = { built: {}, lantern: {}, lanternLit: false, nooks: 0, decor: [], season: 1 };
+const EMPTY_VILLAGE = {
+  built: {},
+  lantern: {},
+  lanternLit: false,
+  nooks: 0,
+  decor: [],
+  season: 1,
+};
 
 const stageState = {
   /** @type {Renderer | null} */ renderer: null,
@@ -39,11 +59,11 @@ const stageState = {
   /** @type {Record<string, any>} */ valley: {},
   /** @type {Record<string, any>} */ village: {},
   /** @type {{ mesh: any, x: number, y: number, z: number }[]} */ clouds: [],
-  seasonKey: '',
-  villageKey: '',
+  seasonKey: "",
+  villageKey: "",
   /** @type {Vec3[]} */ chimneys: [],
   /** @type {Vec3} */ lanternLight: [0, 0, 0],
-  error: '',
+  error: "",
 };
 
 /** Starts WebGL on the canvas. Returns false (with a reason) if the browser can't. */
@@ -99,13 +119,13 @@ export function prepareStage(state, seasonId) {
   const village = state ?? EMPTY_VILLAGE;
   if (stageState.seasonKey !== seasonId) {
     stageState.seasonKey = seasonId;
-    stageState.villageKey = '';
+    stageState.villageKey = "";
     const terrain = buildTerrain(seasonId);
-    replace(stageState.valley, 'near', terrain.near);
-    replace(stageState.valley, 'far', terrain.far);
-    replace(stageState.valley, 'forest', buildForest(seasonId));
-    replace(stageState.valley, 'details', buildMeadowDetails(seasonId));
-    replace(stageState.valley, 'lake', buildLake(seasonId));
+    replace(stageState.valley, "near", terrain.near);
+    replace(stageState.valley, "far", terrain.far);
+    replace(stageState.valley, "forest", buildForest(seasonId));
+    replace(stageState.valley, "details", buildMeadowDetails(seasonId));
+    replace(stageState.valley, "lake", buildLake(seasonId));
     if (!stageState.clouds.length) {
       stageState.clouds = buildClouds().map((c) => ({
         ...c,
@@ -120,13 +140,13 @@ export function prepareStage(state, seasonId) {
     Object.keys(village.lantern).sort().join(),
     village.nooks,
     village.decor.join(),
-  ].join('|');
+  ].join("|");
   if (stageState.villageKey !== key) {
     stageState.villageKey = key;
     const built = buildVillage(village, seasonId);
-    replace(stageState.village, 'solid', built.solid);
-    replace(stageState.village, 'windows', built.windows);
-    replace(stageState.village, 'glass', built.glass);
+    replace(stageState.village, "solid", built.solid);
+    replace(stageState.village, "windows", built.windows);
+    replace(stageState.village, "glass", built.glass);
     stageState.chimneys = built.chimneys;
     stageState.lanternLight = built.lanternLight;
   }
@@ -134,7 +154,7 @@ export function prepareStage(state, seasonId) {
 
 /** Forces the village to rebuild next frame (e.g. after loading a different save). */
 export function invalidateStage() {
-  stageState.villageKey = '';
+  stageState.villageKey = "";
 }
 
 /* ---------- Cameras ---------- */
@@ -207,7 +227,10 @@ export function pointToScreen(point) {
 export function groundUnder(screenX, screenY) {
   const r = stageState.renderer;
   if (!r) return { x: screenX, y: screenY };
-  const { origin, direction } = r.unproject(screenX / VIEW_WIDTH, screenY / VIEW_HEIGHT);
+  const { origin, direction } = r.unproject(
+    screenX / VIEW_WIDTH,
+    screenY / VIEW_HEIGHT,
+  );
   const at = (t) => [
     origin[0] + direction[0] * t,
     origin[1] + direction[1] * t,
@@ -242,17 +265,29 @@ export function screenScale(x, y) {
 /* ---------- Drawing ---------- */
 
 const disc = () =>
-  new MeshBuilder().cylinder(mat4Transform({}), '#ffffff', { segments: 16 }).build();
+  new MeshBuilder()
+    .cylinder(mat4Transform({}), "#ffffff", { segments: 16 })
+    .build();
 const flame = (color) => () =>
-  new MeshBuilder().cylinder(mat4Transform({}), color, { segments: 5, topRadius: 0 }).build();
-const unitBoxMesh = (color) => () => new MeshBuilder().box(mat4Transform({}), color).build();
+  new MeshBuilder()
+    .cylinder(mat4Transform({}), color, { segments: 5, topRadius: 0 })
+    .build();
+const unitBoxMesh = (color) => () =>
+  new MeshBuilder().box(mat4Transform({}), color).build();
 
 /** A soft blob shadow under a character. */
 export function drawShadow(x, y, radius = 0.6) {
   const [X, Y, Z] = worldPoint(x, y, 0);
   painter.draw(
-    painter.part('disc', disc),
-    mat4Transform({ x: X, y: Y + 0.03, z: Z, sx: radius, sy: 0.01, sz: radius * 0.85 }),
+    painter.part("disc", disc),
+    mat4Transform({
+      x: X,
+      y: Y + 0.03,
+      z: Z,
+      sx: radius,
+      sy: 0.01,
+      sz: radius * 0.85,
+    }),
     {
       unlit: true,
       tint: [0.1, 0.08, 0.16, 0.28],
@@ -264,7 +299,7 @@ export function drawShadow(x, y, radius = 0.6) {
 /** The campfire's flames and glow. `glow` 0-1 is how much it lights the evening. */
 function drawCampfireFlames(time, glow) {
   const [X, Y, Z] = worldPoint(LANDMARKS.fire.x, LANDMARKS.fire.y, 0);
-  const colors = ['#f6a55d', '#f7c54f', '#fff0c0'];
+  const colors = ["#f6a55d", "#f7c54f", "#fff0c0"];
   for (let i = 0; i < 6; i++) {
     const a = (i / 6) * Math.PI * 2;
     const h = 0.9 + Math.sin(time * 9 + i * 2.3) * 0.25 + (i % 2) * 0.3;
@@ -283,7 +318,7 @@ function drawCampfireFlames(time, glow) {
     );
   }
   painter.draw(
-    painter.part('flame:core', flame('#fff6d8')),
+    painter.part("flame:core", flame("#fff6d8")),
     mat4Transform({
       x: X,
       y: Y + 0.15,
@@ -297,8 +332,15 @@ function drawCampfireFlames(time, glow) {
   if (glow > 0.02) {
     const flicker = 1 + Math.sin(time * 7) * 0.06;
     painter.draw(
-      painter.part('disc', disc),
-      mat4Transform({ x: X, y: Y + 0.06, z: Z, sx: 5 * flicker, sy: 0.01, sz: 5 * flicker }),
+      painter.part("disc", disc),
+      mat4Transform({
+        x: X,
+        y: Y + 0.06,
+        z: Z,
+        sx: 5 * flicker,
+        sy: 0.01,
+        sz: 5 * flicker,
+      }),
       {
         unlit: true,
         tint: [0, 0, 0, 0.22 * glow],
@@ -312,8 +354,8 @@ function drawCampfireFlames(time, glow) {
 /** The Swiss flag, rippling. */
 function drawFlag(time) {
   const [X, , Z] = worldPoint(LANDMARKS.flag.x, LANDMARKS.flag.y, 0);
-  const red = painter.part('flag:red', unitBoxMesh('#d33838'));
-  const white = painter.part('flag:white', unitBoxMesh('#ffffff'));
+  const red = painter.part("flag:red", unitBoxMesh("#d33838"));
+  const white = painter.part("flag:white", unitBoxMesh("#ffffff"));
   for (let i = 0; i < 8; i++) {
     const wave = Math.sin(i * 0.7 - time * 4) * 0.12 * (i / 8);
     const x = X + 0.1 + i * 0.22 + 0.11;
@@ -332,13 +374,27 @@ function drawFlag(time) {
     if (i >= 3 && i <= 4) {
       painter.draw(
         white,
-        mat4Transform({ x, y: 4.8, z: Z + wave + 0.02, sx: 0.225, sy: 0.8, sz: 0.04 }),
+        mat4Transform({
+          x,
+          y: 4.8,
+          z: Z + wave + 0.02,
+          sx: 0.225,
+          sy: 0.8,
+          sz: 0.04,
+        }),
       );
     }
     if (i >= 2 && i <= 5) {
       painter.draw(
         white,
-        mat4Transform({ x, y: 4.8, z: Z + wave + 0.02, sx: 0.225, sy: 0.26, sz: 0.04 }),
+        mat4Transform({
+          x,
+          y: 4.8,
+          z: Z + wave + 0.02,
+          sx: 0.225,
+          sy: 0.26,
+          sz: 0.04,
+        }),
       );
     }
   }
@@ -372,7 +428,8 @@ export function renderStage(o) {
   r.setLighting(blendLighting(o.timeOfDay, o.seasonId));
   r.beginFrame();
   const v = stageState.valley;
-  for (const mesh of [v.far, v.near, v.forest, v.details]) if (mesh) r.draw(mesh, IDENTITY);
+  for (const mesh of [v.far, v.near, v.forest, v.details])
+    if (mesh) r.draw(mesh, IDENTITY);
   const village = stageState.village;
   if (village.solid) r.draw(village.solid, IDENTITY);
   const glow = o.windowGlow ?? 0;
@@ -393,7 +450,7 @@ export function renderStage(o) {
   drawFlag(o.time);
   drawCampfireFlames(o.time, o.fireGlow ?? 0);
   o.actors?.(painter);
-  const winter = o.seasonId === 'winter';
+  const winter = o.seasonId === "winter";
   if (v.lake) {
     r.draw(v.lake, IDENTITY, {
       shine: winter ? 0.4 : 1,
@@ -403,7 +460,11 @@ export function renderStage(o) {
     });
   }
   if (village.glass) {
-    r.draw(village.glass, IDENTITY, { shine: 1, tint: [1, 1, 1, 0.38], transparent: true });
+    r.draw(village.glass, IDENTITY, {
+      shine: 1,
+      tint: [1, 1, 1, 0.38],
+      transparent: true,
+    });
   }
   const lantern = o.lanternGlow ?? 0;
   if (lantern > 0.01) {
@@ -414,9 +475,9 @@ export function renderStage(o) {
       [10, 0.1],
     ]) {
       r.draw(
-        painter.part('glow', () =>
+        painter.part("glow", () =>
           new MeshBuilder()
-            .sphere(mat4Transform({}), '#ffffff', { segments: 10, rings: 6 })
+            .sphere(mat4Transform({}), "#ffffff", { segments: 10, rings: 6 })
             .build(),
         ),
         mat4Transform({ x: X, y: Y, z: Z, s }),
@@ -442,15 +503,26 @@ const portraitCache = new Map();
  * @param {import('./models.js').Coat} coat
  * @param {{ pose?: string, hat?: string | null, size?: number, key: string }} options
  */
-export function catPortrait(coat, { pose = 'sit', hat = null, size = 96, key }) {
+export function catPortrait(
+  coat,
+  { pose = "sit", hat = null, size = 96, key },
+) {
   const r = stageState.renderer;
-  if (!r) return '';
+  if (!r) return "";
   const cacheKey = `${key}|${pose}|${hat}|${size}`;
   const cached = portraitCache.get(cacheKey);
   if (cached) return cached;
-  r.setLighting(blendLighting({ from: 1, to: 1, blend: 0 }, 'summer'));
-  const url = r.snapshot(size, size, { eye: [1.9, 1.3, 2.6], target: [0, 0.6, 0], fov: 24 }, () =>
-    drawCatModel(painter, coat, pose, [0, 0, 0], { heading: -0.6, hat, time: 0.4 }),
+  r.setLighting(blendLighting({ from: 1, to: 1, blend: 0 }, "summer"));
+  const url = r.snapshot(
+    size,
+    size,
+    { eye: [1.9, 1.3, 2.6], target: [0, 0.6, 0], fov: 24 },
+    () =>
+      drawCatModel(painter, coat, pose, [0, 0, 0], {
+        heading: -0.6,
+        hat,
+        time: 0.4,
+      }),
   );
   portraitCache.set(cacheKey, url);
   return url;

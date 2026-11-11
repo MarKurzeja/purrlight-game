@@ -14,9 +14,13 @@ export function qs(selector) {
 export function escapeHtml(value) {
   return String(value).replace(
     /[&<>"']/g,
-    (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch],
+    (ch) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        ch
+      ],
   );
 }
 
 /** True on phones and tablets, where prompts say "Tap" instead of a key. */
-export const IS_TOUCH = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
+export const IS_TOUCH =
+  typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;

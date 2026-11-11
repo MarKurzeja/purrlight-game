@@ -15,6 +15,6 @@
  *   'photo:taken'     { catId, isNew }
  *   'wish:granted'    { catId, kind }
  */
-import { createEventBus } from '../core/events.js';
+import { createEventBus } from "../core/events.js";
 
 export const gameEvents = createEventBus();

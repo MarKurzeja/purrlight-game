@@ -1,7 +1,7 @@
 /** Each cat shows one wish a day. Granting it gives a bonus. */
-import { BALANCE } from '../config.js';
-import { pickFrom } from './random.js';
-import { addBond, changeWarmth, isWary, presentCats } from './state.js';
+import { BALANCE } from "../config.js";
+import { pickFrom } from "./random.js";
+import { addBond, changeWarmth, isWary, presentCats } from "./state.js";
 
 /**
  * @typedef {import('./state.js').GameState} GameState
@@ -10,10 +10,10 @@ import { addBond, changeWarmth, isWary, presentCats } from './state.js';
  */
 
 export const WISHES = Object.freeze({
-  food: { label: 'a full bowl' },
-  pets: { label: 'some pets' },
-  play: { label: 'a game' },
-  sit: { label: 'quiet company' },
+  food: { label: "a full bowl" },
+  pets: { label: "some pets" },
+  play: { label: "a game" },
+  sit: { label: "quiet company" },
 });
 
 /**
@@ -25,13 +25,14 @@ export const WISHES = Object.freeze({
  */
 export function rollWish(state, catId, rng) {
   return isWary(state, catId)
-    ? pickFrom(rng, /** @type {const} */ (['food', 'sit', 'sit']))
-    : pickFrom(rng, /** @type {const} */ (['food', 'pets', 'play']));
+    ? pickFrom(rng, /** @type {const} */ (["food", "sit", "sit"]))
+    : pickFrom(rng, /** @type {const} */ (["food", "pets", "play"]));
 }
 
 /** @param {GameState} state @param {Rng} rng */
 export function rollWishes(state, rng) {
-  for (const cat of presentCats(state)) state.cats[cat.id].wish = rollWish(state, cat.id, rng);
+  for (const cat of presentCats(state))
+    state.cats[cat.id].wish = rollWish(state, cat.id, rng);
 }
 
 /**

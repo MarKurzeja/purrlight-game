@@ -1,18 +1,18 @@
 /** Three ways to play: a laser pointer, a ribbon wand and a yarn ball. Each scores 0-1. */
-import { VIEW_WIDTH } from '../config.js';
-import { clamp, distance, lerp } from '../core/math.js';
-import { rand } from '../core/random.js';
-import { CAT_BY_ID } from '../data/cats.js';
-import { playSound } from '../engine/audio.js';
-import { display, drawText, ellipse, rect } from '../engine/canvas.js';
-import { input, keyPressed } from '../engine/input.js';
-import { finishPlay } from '../game/actions.js';
-import { currentState, game } from '../game/runtime.js';
-import { openCatMenu } from '../ui/cat-menus.js';
-import { setHint } from '../ui/hud.js';
-import { playResultHtml } from '../ui/results.js';
-import { playCamera } from '../render/stage.js';
-import { drawMeter, drawOutdoors, drawTimer, finishMinigame } from './kit.js';
+import { VIEW_WIDTH } from "../config.js";
+import { clamp, distance, lerp } from "../core/math.js";
+import { rand } from "../core/random.js";
+import { CAT_BY_ID } from "../data/cats.js";
+import { playSound } from "../engine/audio.js";
+import { display, drawText, ellipse, rect } from "../engine/canvas.js";
+import { input, keyPressed } from "../engine/input.js";
+import { finishPlay } from "../game/actions.js";
+import { currentState, game } from "../game/runtime.js";
+import { openCatMenu } from "../ui/cat-menus.js";
+import { setHint } from "../ui/hud.js";
+import { playResultHtml } from "../ui/results.js";
+import { playCamera } from "../render/stage.js";
+import { drawMeter, drawOutdoors, drawTimer, finishMinigame } from "./kit.js";
 
 const GAME_SECONDS = 14;
 
@@ -42,7 +42,7 @@ const laser = {
 };
 
 export const LaserScene = {
-  name: 'laser',
+  name: "laser",
   fullscreen: true,
   enter() {
     Object.assign(laser, {
@@ -55,7 +55,7 @@ export const LaserScene = {
       dotY: 180,
       done: false,
     });
-    setHint('Move the red dot. Keep it just out of reach. Let the cat run.');
+    setHint("Move the red dot. Keep it just out of reach. Let the cat run.");
   },
   update(dt) {
     if (laser.done) return;
@@ -75,7 +75,7 @@ export const LaserScene = {
     if (gap < 14) laser.thrill = Math.max(0, laser.thrill - dt * 0.2); // caught it: boring
     if (laser.timeLeft <= 0) {
       laser.done = true;
-      endToyGame('laser', laser.thrill);
+      endToyGame("laser", laser.thrill);
     }
   },
   draw() {
@@ -86,7 +86,7 @@ export const LaserScene = {
       [
         {
           catId: def.id,
-          pose: 'walk',
+          pose: "walk",
           sx: laser.catX,
           sy: laser.catY,
           flip: laser.flip,
@@ -96,9 +96,9 @@ export const LaserScene = {
       ],
       playCamera(860),
     );
-    ellipse(ctx, laser.dotX, laser.dotY, 3, 3, '#f0526a');
-    ellipse(ctx, laser.dotX, laser.dotY, 1, 1, '#fff');
-    drawMeter(14, 14, 150, 'Thrill', laser.thrill, '#f3a982');
+    ellipse(ctx, laser.dotX, laser.dotY, 3, 3, "#f0526a");
+    ellipse(ctx, laser.dotX, laser.dotY, 1, 1, "#fff");
+    drawMeter(14, 14, 150, "Thrill", laser.thrill, "#f3a982");
     drawTimer(laser.timeLeft);
   },
 };
@@ -109,78 +109,90 @@ const ROUNDS = 6;
 const ribbon = {
   round: 0,
   escapes: 0,
-  phase: 'wiggle',
+  phase: "wiggle",
   timer: 0,
-  message: '',
+  message: "",
   yank: 0,
   done: false,
 };
 
 export const RibbonScene = {
-  name: 'ribbon',
+  name: "ribbon",
   fullscreen: true,
   enter() {
     Object.assign(ribbon, {
       round: 0,
       escapes: 0,
-      phase: 'wiggle',
+      phase: "wiggle",
       timer: rand(1, 2.2),
-      message: '',
+      message: "",
       yank: 0,
       done: false,
     });
-    setHint('Yank the ribbon by tapping, or press Space, the moment the cat crouches and wiggles.');
+    setHint(
+      "Yank the ribbon by tapping, or press Space, the moment the cat crouches and wiggles.",
+    );
   },
   update(dt) {
     if (ribbon.done) return;
     ribbon.timer -= dt;
     ribbon.yank = Math.max(0, ribbon.yank - dt * 3);
-    const pressed = input.pointer.pressedThisFrame || keyPressed(' ');
+    const pressed = input.pointer.pressedThisFrame || keyPressed(" ");
     const rest = (message) => {
       ribbon.message = message;
       ribbon.round += 1;
-      ribbon.phase = 'rest';
+      ribbon.phase = "rest";
       ribbon.timer = 0.8;
     };
-    if (ribbon.phase === 'wiggle') {
+    if (ribbon.phase === "wiggle") {
       if (pressed) {
-        rest('Too soon');
-        playSound('miss');
+        rest("Too soon");
+        playSound("miss");
       } else if (ribbon.timer < 0) {
-        ribbon.phase = 'crouch';
+        ribbon.phase = "crouch";
         // Cats you know well give you a little longer.
         ribbon.timer =
           0.62 +
-          (currentState().cats[/** @type {string} */ (game.selectedCatId)].bond > 40 ? 0.25 : 0);
+          (currentState().cats[/** @type {string} */ (game.selectedCatId)]
+            .bond > 40
+            ? 0.25
+            : 0);
       }
-    } else if (ribbon.phase === 'crouch') {
+    } else if (ribbon.phase === "crouch") {
       if (pressed) {
         ribbon.escapes += 1;
         ribbon.yank = 1;
-        playSound('hit', ribbon.escapes);
-        rest('Got away!');
+        playSound("hit", ribbon.escapes);
+        rest("Got away!");
       } else if (ribbon.timer < 0) {
-        rest('Caught!');
-        playSound('miss');
+        rest("Caught!");
+        playSound("miss");
       }
     } else if (ribbon.timer < 0) {
       if (ribbon.round >= ROUNDS) {
         ribbon.done = true;
-        endToyGame('ribbon', ribbon.escapes / ROUNDS + 0.1);
+        endToyGame("ribbon", ribbon.escapes / ROUNDS + 0.1);
       } else {
-        ribbon.phase = 'wiggle';
+        ribbon.phase = "wiggle";
         ribbon.timer = rand(0.9, 2.3);
-        ribbon.message = '';
+        ribbon.message = "";
       }
     }
   },
   draw() {
     const ctx = display.pixel;
     const { def, hat } = selectedCat();
-    const crouching = ribbon.phase === 'crouch';
+    const crouching = ribbon.phase === "crouch";
     const catX = 150 + (crouching ? Math.sin(game.time * 30) * 2 : 0);
     drawOutdoors(1100, [
-      { catId: def.id, pose: crouching ? 'loaf' : 'sit', sx: catX, sy: 214, scale: 1.6, hat },
+      {
+        catId: def.id,
+        pose: crouching ? "loaf" : "sit",
+        sx: catX,
+        sy: 214,
+        scale: 1.6,
+        hat,
+      },
     ]);
     const rx = 350 + ribbon.yank * 90;
     const ry = 200 - ribbon.yank * 50;
@@ -191,12 +203,17 @@ export const RibbonScene = {
         ry + Math.sin(i * 0.8 + game.time * 6) * 5,
         3,
         3,
-        i % 2 ? '#e87c94' : '#f4c3d1',
+        i % 2 ? "#e87c94" : "#f4c3d1",
       );
     }
-    rect(ctx, rx, ry - 2, 60, 2, '#a58668');
-    if (crouching) drawText('!', catX, 120, { size: 18, color: '#e87c94' });
-    drawText(`Round ${Math.min(ROUNDS, ribbon.round + 1)} of ${ROUNDS}`, 240, 18, { size: 9 });
+    rect(ctx, rx, ry - 2, 60, 2, "#a58668");
+    if (crouching) drawText("!", catX, 120, { size: 18, color: "#e87c94" });
+    drawText(
+      `Round ${Math.min(ROUNDS, ribbon.round + 1)} of ${ROUNDS}`,
+      240,
+      18,
+      { size: 9 },
+    );
     if (ribbon.message) drawText(ribbon.message, 300, 110, { size: 11 });
   },
 };
@@ -217,7 +234,7 @@ const ball = {
 };
 
 export const BallScene = {
-  name: 'ball',
+  name: "ball",
   fullscreen: true,
   enter() {
     Object.assign(ball, {
@@ -232,7 +249,9 @@ export const BallScene = {
       bat: 0,
       done: false,
     });
-    setHint('Tap the yarn ball to keep it in the air. The cat bats it when it comes low.');
+    setHint(
+      "Tap the yarn ball to keep it in the air. The cat bats it when it comes low.",
+    );
   },
   update(dt) {
     if (ball.done) return;
@@ -250,13 +269,13 @@ export const BallScene = {
       ball.vy = -rand(170, 210);
       ball.vx = (ball.x - px) * 4 + rand(-40, 40);
       ball.rally += 0.09;
-      playSound('hit', Math.floor(ball.rally * 10));
+      playSound("hit", Math.floor(ball.rally * 10));
     }
-    if (keyPressed(' ') && ball.y > 90) {
+    if (keyPressed(" ") && ball.y > 90) {
       ball.vy = -190;
       ball.vx = rand(-90, 90);
       ball.rally += 0.07;
-      playSound('hit', 3);
+      playSound("hit", 3);
     }
     ball.catX = lerp(ball.catX, ball.x, dt * 2.4);
     ball.flip = ball.x < ball.catX;
@@ -265,7 +284,7 @@ export const BallScene = {
       ball.vx = rand(-110, 110);
       ball.rally += 0.05;
       ball.bat = 1;
-      playSound('click');
+      playSound("click");
     }
     if (ball.y > 236) {
       ball.y = 236;
@@ -274,21 +293,36 @@ export const BallScene = {
     }
     if (ball.timeLeft <= 0) {
       ball.done = true;
-      endToyGame('ball', ball.rally);
+      endToyGame("ball", ball.rally);
     }
   },
   draw() {
     const ctx = display.pixel;
     const { def, hat } = selectedCat();
     const running = Math.abs(ball.x - ball.catX) > 10;
-    const pose = ball.bat > 0 ? 'groom' : running ? 'walk' : 'sit';
+    const pose = ball.bat > 0 ? "groom" : running ? "walk" : "sit";
     drawOutdoors(1240, [
-      { catId: def.id, pose, sx: ball.catX, sy: 244, flip: ball.flip, scale: 1.4, hat },
+      {
+        catId: def.id,
+        pose,
+        sx: ball.catX,
+        sy: 244,
+        flip: ball.flip,
+        scale: 1.4,
+        hat,
+      },
     ]);
-    ellipse(ctx, ball.x, ball.y, 8, 8, '#8c86c0');
-    ellipse(ctx, ball.x - 2, ball.y - 2, 4, 4, '#a9a4dc');
-    rect(ctx, ball.x - 6, ball.y + Math.sin(game.time * 9) * 2, 12, 1, '#6f69a4');
-    drawMeter(14, 14, 150, 'Rally', ball.rally, '#f3a982');
+    ellipse(ctx, ball.x, ball.y, 8, 8, "#8c86c0");
+    ellipse(ctx, ball.x - 2, ball.y - 2, 4, 4, "#a9a4dc");
+    rect(
+      ctx,
+      ball.x - 6,
+      ball.y + Math.sin(game.time * 9) * 2,
+      12,
+      1,
+      "#6f69a4",
+    );
+    drawMeter(14, 14, 150, "Rally", ball.rally, "#f3a982");
     drawTimer(ball.timeLeft);
   },
 };

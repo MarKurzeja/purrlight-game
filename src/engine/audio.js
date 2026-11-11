@@ -5,7 +5,7 @@
  * instruments (piano, guitar, alphorn, music box) come and go with silences in between.
  * Wind, birds and distant cowbells play underneath.
  */
-import { pickRandom, rand } from '../core/random.js';
+import { pickRandom, rand } from "../core/random.js";
 
 const PENTATONIC = [0, 2, 4, 7, 9, 12];
 /** Seven-note scale for each season, as semitones from the root. */
@@ -27,10 +27,10 @@ const CHORD_WALK = {
 };
 /** Instruments that suit each time of day. */
 const SECTIONS_BY_PHASE = {
-  dawn: ['piano', 'rest', 'melody', 'guitar'],
-  day: ['guitar', 'melody', 'piano', 'alphorn', 'rest'],
-  evening: ['piano', 'alphorn', 'rest', 'pad'],
-  night: ['musicbox', 'pad', 'rest', 'piano'],
+  dawn: ["piano", "rest", "melody", "guitar"],
+  day: ["guitar", "melody", "piano", "alphorn", "rest"],
+  evening: ["piano", "alphorn", "rest", "pad"],
+  night: ["musicbox", "pad", "rest", "piano"],
 };
 
 const midiToHz = (note) => 440 * Math.pow(2, (note - 69) / 12);
@@ -39,7 +39,7 @@ const midiToHz = (note) => 440 * Math.pow(2, (note - 69) / 12);
 export const audioSettings = { music: true, effects: true };
 
 /** @type {() => { phase: string, season: string }} */
-let musicContext = () => ({ phase: 'night', season: 'summer' });
+let musicContext = () => ({ phase: "night", season: "summer" });
 
 /** Tells the composer what time of day and season it is. */
 export function setMusicContext(provider) {
@@ -75,7 +75,8 @@ export function initAudio() {
     return;
   }
   try {
-    const Ctor = window.AudioContext || /** @type {any} */ (window).webkitAudioContext;
+    const Ctor =
+      window.AudioContext || /** @type {any} */ (window).webkitAudioContext;
     const ctx = new Ctor();
     engine.ctx = ctx;
     const n = engine.nodes;
@@ -90,7 +91,7 @@ export function initAudio() {
     n.music = ctx.createGain();
     n.music.gain.value = audioSettings.music ? 0.55 : 0;
     const soften = ctx.createBiquadFilter();
-    soften.type = 'lowpass';
+    soften.type = "lowpass";
     soften.frequency.value = 2600;
     n.music.connect(soften).connect(n.master);
 
@@ -156,7 +157,7 @@ function startWind(ctx) {
   source.buffer = engine.noise;
   source.loop = true;
   const band = ctx.createBiquadFilter();
-  band.type = 'bandpass';
+  band.type = "bandpass";
   band.frequency.value = 420;
   band.Q.value = 0.6;
   const level = ctx.createGain();
@@ -188,17 +189,20 @@ function tone(frequency, time, o) {
   const ctx = /** @type {AudioContext} */ (engine.ctx);
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
-  osc.type = o.type ?? 'sine';
+  osc.type = o.type ?? "sine";
   osc.frequency.value = frequency;
   if (o.detune) osc.detune.value = o.detune;
   /** @type {AudioNode} */
   let last = osc;
   if (o.lowpass) {
     const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
+    filter.type = "lowpass";
     filter.frequency.setValueAtTime(o.lowpass, time);
     if (o.lowpassEnd) {
-      filter.frequency.exponentialRampToValueAtTime(o.lowpassEnd, time + o.duration);
+      filter.frequency.exponentialRampToValueAtTime(
+        o.lowpassEnd,
+        time + o.duration,
+      );
     }
     osc.connect(filter);
     last = filter;
@@ -224,7 +228,7 @@ const INSTRUMENTS = {
     tone(midiToHz(note), time, {
       duration: 1.3,
       volume,
-      type: 'triangle',
+      type: "triangle",
       lowpass: 1800,
       lowpassEnd: 400,
     });
@@ -242,7 +246,7 @@ const INSTRUMENTS = {
           attack: 2.4,
           hold: Math.max(0.1, duration - 2.4),
           volume,
-          type: 'triangle',
+          type: "triangle",
           detune,
           lowpass: 800,
         });
@@ -256,7 +260,7 @@ const INSTRUMENTS = {
       attack: 0.5,
       hold: duration * 0.4,
       volume,
-      type: 'sawtooth',
+      type: "sawtooth",
       lowpass: 520,
       destination: send,
     });
@@ -265,7 +269,7 @@ const INSTRUMENTS = {
       attack: 0.6,
       hold: duration * 0.4,
       volume: volume * 0.6,
-      type: 'sawtooth',
+      type: "sawtooth",
       lowpass: 360,
       destination: send,
     });
@@ -287,12 +291,14 @@ function currentChord() {
 }
 
 function startSection() {
-  const pool = SECTIONS_BY_PHASE[musicContext().phase] ?? SECTIONS_BY_PHASE.night;
+  const pool =
+    SECTIONS_BY_PHASE[musicContext().phase] ?? SECTIONS_BY_PHASE.night;
   let kind = pickRandom(pool);
-  if (engine.section && kind === engine.section.kind) kind = 'rest';
+  if (engine.section && kind === engine.section.kind) kind = "rest";
   engine.section = {
     kind,
-    barsLeft: kind === 'rest' ? 2 + Math.floor(rand(2)) : 3 + Math.floor(rand(4)),
+    barsLeft:
+      kind === "rest" ? 2 + Math.floor(rand(2)) : 3 + Math.floor(rand(4)),
     barLength: (60 / rand(50, 58)) * 4,
     motif: [
       pickRandom([0, 1, 2]),
@@ -300,21 +306,25 @@ function startSection() {
       pickRandom([2, 3, 4]),
       pickRandom([1, 2]),
     ],
-    brushes: Math.random() < 0.22 && kind !== 'rest' && kind !== 'musicbox',
+    brushes: Math.random() < 0.22 && kind !== "rest" && kind !== "musicbox",
   };
   // Now and then drift to a related key so the music never settles into a loop.
   if (Math.random() < 0.3) {
-    engine.key = ((engine.key + pickRandom([5, -5, 2, -2, 7, -7]) + 18) % 12) - 6;
+    engine.key =
+      ((engine.key + pickRandom([5, -5, 2, -2, 7, -7]) + 18) % 12) - 6;
   }
 }
 
 /** Schedules the next bars of music slightly ahead of time. */
 function schedule() {
   const ctx = engine.ctx;
-  if (!ctx || ctx.state !== 'running') return;
+  if (!ctx || ctx.state !== "running") return;
   while (engine.nextBarTime < ctx.currentTime + 1.2) {
     if (!engine.section || engine.section.barsLeft <= 0) startSection();
-    playBar(/** @type {NonNullable<typeof engine.section>} */ (engine.section), engine.nextBarTime);
+    playBar(
+      /** @type {NonNullable<typeof engine.section>} */ (engine.section),
+      engine.nextBarTime,
+    );
     engine.nextBarTime += engine.section?.barLength ?? 4;
   }
   if (ctx.currentTime > engine.nextAmbientTime) {
@@ -329,7 +339,7 @@ function playBar(section, time) {
   const humanise = () => rand(-0.025, 0.025);
   section.barsLeft -= 1;
 
-  if (section.kind !== 'rest' || Math.random() < 0.5) {
+  if (section.kind !== "rest" || Math.random() < 0.5) {
     INSTRUMENTS.pad(
       [chord.tones[0] - 12, chord.tones[1] - 12, chord.tones[3] - 12],
       time,
@@ -337,7 +347,7 @@ function playBar(section, time) {
       0.018,
     );
   }
-  if (section.kind !== 'rest' && Math.random() < 0.75) {
+  if (section.kind !== "rest" && Math.random() < 0.75) {
     tone(midiToHz(chord.bass - 12), time, {
       duration: section.barLength * 0.9,
       attack: 0.6,
@@ -347,7 +357,7 @@ function playBar(section, time) {
   }
 
   switch (section.kind) {
-    case 'piano':
+    case "piano":
       pickRandom([
         [0, 2, 3],
         [0, 1.5, 3],
@@ -361,7 +371,7 @@ function playBar(section, time) {
         ),
       );
       break;
-    case 'guitar':
+    case "guitar":
       pickRandom([
         [0, 1, 1.5, 2, 3],
         [0, 0.5, 1, 2.5],
@@ -374,10 +384,11 @@ function playBar(section, time) {
         ),
       );
       break;
-    case 'melody':
-      if (Math.random() < 0.8) playMelodyPhrase(section, chord, time, beat, humanise);
+    case "melody":
+      if (Math.random() < 0.8)
+        playMelodyPhrase(section, chord, time, beat, humanise);
       break;
-    case 'musicbox':
+    case "musicbox":
       if (Math.random() < 0.75) {
         pickRandom([
           [0, 1, 2],
@@ -392,7 +403,7 @@ function playBar(section, time) {
         );
       }
       break;
-    case 'alphorn':
+    case "alphorn":
       if (engine.bar % 2 === 0) {
         const root = chord.tones[0] - 12;
         INSTRUMENTS.alphorn(root, time, 3.2, 0.012);
@@ -427,7 +438,7 @@ function playBrushes(time, beat) {
     const source = ctx.createBufferSource();
     source.buffer = engine.noise;
     const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
+    filter.type = "bandpass";
     filter.frequency.value = 5200;
     filter.Q.value = 0.7;
     const gain = ctx.createGain();
@@ -445,7 +456,11 @@ function playAmbience(time) {
   const ctx = /** @type {AudioContext} */ (engine.ctx);
   const { phase, season } = musicContext();
   const n = engine.nodes;
-  if ((phase === 'dawn' || phase === 'day') && season !== 'winter' && Math.random() < 0.55) {
+  if (
+    (phase === "dawn" || phase === "day") &&
+    season !== "winter" &&
+    Math.random() < 0.55
+  ) {
     let pitch = rand(2600, 3800);
     let at = time;
     const chirps = 2 + Math.floor(rand(5));
@@ -453,7 +468,10 @@ function playAmbience(time) {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.frequency.setValueAtTime(pitch, at);
-      osc.frequency.exponentialRampToValueAtTime(pitch * rand(0.8, 1.25), at + 0.09);
+      osc.frequency.exponentialRampToValueAtTime(
+        pitch * rand(0.8, 1.25),
+        at + 0.09,
+      );
       gain.gain.setValueAtTime(0.0001, at);
       gain.gain.linearRampToValueAtTime(0.008, at + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.12);
@@ -465,7 +483,7 @@ function playAmbience(time) {
       at += rand(0.1, 0.26);
       pitch *= rand(0.95, 1.05);
     }
-  } else if (phase !== 'night') {
+  } else if (phase !== "night") {
     let at = time;
     const rings = 1 + Math.floor(rand(4));
     for (let i = 0; i < rings; i++) {
@@ -478,9 +496,13 @@ function playAmbience(time) {
       );
       at += rand(0.4, 0.9);
     }
-  } else if (season === 'summer') {
+  } else if (season === "summer") {
     for (let i = 0; i < 7; i++) {
-      tone(4300, time + i * 0.09, { duration: 0.05, volume: 0.0035, destination: n.ambience });
+      tone(4300, time + i * 0.09, {
+        duration: 0.05,
+        volume: 0.0035,
+        destination: n.ambience,
+      });
     }
   }
 }
@@ -508,36 +530,41 @@ export function playSound(name, variation = 0) {
     frequency,
     delay,
     volume,
-    type = /** @type {OscillatorType} */ ('sine'),
+    type = /** @type {OscillatorType} */ ("sine"),
     duration = 0.2,
-  ) => tone(frequency, now + delay, { duration, volume, type, destination: out });
+  ) =>
+    tone(frequency, now + delay, { duration, volume, type, destination: out });
 
   switch (name) {
-    case 'click':
-      blip(520, 0, 0.05, 'sine', 0.08);
+    case "click":
+      blip(520, 0, 0.05, "sine", 0.08);
       break;
-    case 'get':
-      blip(660, 0, 0.08, 'sine', 0.25);
-      blip(880, 0.09, 0.07, 'sine', 0.35);
+    case "get":
+      blip(660, 0, 0.08, "sine", 0.25);
+      blip(880, 0.09, 0.07, "sine", 0.35);
       break;
-    case 'hit':
-      blip(midiToHz(72 + PENTATONIC[variation % 6]), 0, 0.12, 'sine', 0.5);
-      blip(midiToHz(84 + PENTATONIC[variation % 6]), 0, 0.03, 'sine', 0.3);
+    case "hit":
+      blip(midiToHz(72 + PENTATONIC[variation % 6]), 0, 0.12, "sine", 0.5);
+      blip(midiToHz(84 + PENTATONIC[variation % 6]), 0, 0.03, "sine", 0.3);
       break;
-    case 'miss':
-      blip(200, 0, 0.06, 'sine', 0.16);
+    case "miss":
+      blip(200, 0, 0.06, "sine", 0.16);
       break;
-    case 'chime':
-      [0, 4, 7, 12].forEach((m, i) => blip(midiToHz(72 + m), i * 0.13, 0.09, 'sine', 1.2));
+    case "chime":
+      [0, 4, 7, 12].forEach((m, i) =>
+        blip(midiToHz(72 + m), i * 0.13, 0.09, "sine", 1.2),
+      );
       break;
-    case 'build':
-      [0, 7, 12, 16].forEach((m, i) => blip(midiToHz(60 + m), i * 0.15, 0.1, 'triangle', 0.8));
+    case "build":
+      [0, 7, 12, 16].forEach((m, i) =>
+        blip(midiToHz(60 + m), i * 0.15, 0.1, "triangle", 0.8),
+      );
       break;
-    case 'hiss': {
+    case "hiss": {
       const source = ctx.createBufferSource();
       source.buffer = engine.noise;
       const filter = ctx.createBiquadFilter();
-      filter.type = 'bandpass';
+      filter.type = "bandpass";
       filter.frequency.value = 3000;
       const gain = ctx.createGain();
       gain.gain.setValueAtTime(0.16, now);
@@ -546,16 +573,16 @@ export function playSound(name, variation = 0) {
       source.start(now, 0, 0.5);
       break;
     }
-    case 'meow': {
+    case "meow": {
       const osc = ctx.createOscillator();
       const filter = ctx.createBiquadFilter();
       const gain = ctx.createGain();
       const base = rand(420, 620);
-      osc.type = 'sawtooth';
+      osc.type = "sawtooth";
       osc.frequency.setValueAtTime(base, now);
       osc.frequency.linearRampToValueAtTime(base * 1.5, now + 0.12);
       osc.frequency.linearRampToValueAtTime(base * 0.8, now + 0.42);
-      filter.type = 'bandpass';
+      filter.type = "bandpass";
       filter.frequency.setValueAtTime(900, now);
       filter.frequency.linearRampToValueAtTime(1600, now + 0.15);
       filter.frequency.linearRampToValueAtTime(700, now + 0.42);
@@ -583,9 +610,9 @@ export function setPurring(on) {
     const pulseDepth = ctx.createGain();
     const gain = ctx.createGain();
     const filter = ctx.createBiquadFilter();
-    osc.type = 'sawtooth';
+    osc.type = "sawtooth";
     osc.frequency.value = 46;
-    filter.type = 'lowpass';
+    filter.type = "lowpass";
     filter.frequency.value = 240;
     pulse.frequency.value = 24;
     pulseDepth.gain.value = 0.08;

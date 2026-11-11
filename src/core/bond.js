@@ -1,5 +1,5 @@
 /** Bond tiers: how far a cat trusts you. */
-import { BOND_TIERS } from '../data/cats.js';
+import { BOND_TIERS } from "../data/cats.js";
 
 /**
  * The tier index (0 = Wary ... 4 = Soulmate) for a bond value.

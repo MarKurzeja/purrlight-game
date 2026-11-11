@@ -10,7 +10,7 @@ import {
   vec3Cross,
   vec3Normalize,
   vec3Subtract,
-} from './math3d.js';
+} from "./math3d.js";
 
 /** @typedef {import('./math3d.js').Vec3} Vec3 */
 /** @typedef {import('./math3d.js').Mat4} Mat4 */
@@ -23,7 +23,8 @@ export function hexToVec3(hex) {
 }
 
 /** @param {string | Vec3} color */
-const toColor = (color) => (typeof color === 'string' ? hexToVec3(color) : color);
+const toColor = (color) =>
+  typeof color === "string" ? hexToVec3(color) : color;
 
 export class MeshBuilder {
   constructor() {
@@ -34,7 +35,9 @@ export class MeshBuilder {
 
   /** Adds one triangle (counter-clockwise when seen from the front). */
   triangle(a, b, c, color) {
-    const normal = vec3Normalize(vec3Cross(vec3Subtract(b, a), vec3Subtract(c, a)));
+    const normal = vec3Normalize(
+      vec3Cross(vec3Subtract(b, a), vec3Subtract(c, a)),
+    );
     const rgb = toColor(color);
     for (const p of [a, b, c]) {
       this.positions.push(p[0], p[1], p[2]);
@@ -83,11 +86,19 @@ export class MeshBuilder {
         local.positions[i + 2],
       ]);
       const n = vec3Normalize(
-        transformDirection(asMat4, [local.normals[i], local.normals[i + 1], local.normals[i + 2]]),
+        transformDirection(asMat4, [
+          local.normals[i],
+          local.normals[i + 1],
+          local.normals[i + 2],
+        ]),
       );
       this.positions.push(...p);
       this.normals.push(...n);
-      this.colors.push(local.colors[i], local.colors[i + 1], local.colors[i + 2]);
+      this.colors.push(
+        local.colors[i],
+        local.colors[i + 1],
+        local.colors[i + 2],
+      );
     }
     return this;
   }
@@ -98,7 +109,7 @@ export class MeshBuilder {
    */
   box(matrix, colors) {
     const c =
-      typeof colors === 'object' && !Array.isArray(colors)
+      typeof colors === "object" && !Array.isArray(colors)
         ? colors
         : { top: colors, bottom: colors, side: colors };
     const side = c.side ?? c.top;
@@ -106,11 +117,41 @@ export class MeshBuilder {
       const h = 0.5;
       const v = (x, y, z) => /** @type {Vec3} */ ([x * h, y * h, z * h]);
       b.quad(v(-1, 1, 1), v(1, 1, 1), v(1, 1, -1), v(-1, 1, -1), c.top); // top
-      b.quad(v(-1, -1, -1), v(1, -1, -1), v(1, -1, 1), v(-1, -1, 1), c.bottom ?? side); // bottom
-      b.quad(v(-1, -1, 1), v(1, -1, 1), v(1, 1, 1), v(-1, 1, 1), c.front ?? side); // front (+z)
-      b.quad(v(1, -1, -1), v(-1, -1, -1), v(-1, 1, -1), v(1, 1, -1), c.back ?? side); // back
-      b.quad(v(1, -1, 1), v(1, -1, -1), v(1, 1, -1), v(1, 1, 1), c.right ?? side); // right
-      b.quad(v(-1, -1, -1), v(-1, -1, 1), v(-1, 1, 1), v(-1, 1, -1), c.left ?? side); // left
+      b.quad(
+        v(-1, -1, -1),
+        v(1, -1, -1),
+        v(1, -1, 1),
+        v(-1, -1, 1),
+        c.bottom ?? side,
+      ); // bottom
+      b.quad(
+        v(-1, -1, 1),
+        v(1, -1, 1),
+        v(1, 1, 1),
+        v(-1, 1, 1),
+        c.front ?? side,
+      ); // front (+z)
+      b.quad(
+        v(1, -1, -1),
+        v(-1, -1, -1),
+        v(-1, 1, -1),
+        v(1, 1, -1),
+        c.back ?? side,
+      ); // back
+      b.quad(
+        v(1, -1, 1),
+        v(1, -1, -1),
+        v(1, 1, -1),
+        v(1, 1, 1),
+        c.right ?? side,
+      ); // right
+      b.quad(
+        v(-1, -1, -1),
+        v(-1, -1, 1),
+        v(-1, 1, 1),
+        v(-1, 1, -1),
+        c.left ?? side,
+      ); // left
     });
   }
 
@@ -118,12 +159,20 @@ export class MeshBuilder {
    * A cylinder or cone along +y from 0 to 1, radius 1 at the bottom and `topRadius` at the top.
    * @param {Mat4} matrix
    */
-  cylinder(matrix, color, { segments = 8, topRadius = 1, capColor = color, caps = true } = {}) {
+  cylinder(
+    matrix,
+    color,
+    { segments = 8, topRadius = 1, capColor = color, caps = true } = {},
+  ) {
     return this.transformed(matrix, (b) => {
       const ring = (radius, y) =>
         Array.from({ length: segments }, (_, i) => {
           const a = (i / segments) * Math.PI * 2;
-          return /** @type {Vec3} */ ([Math.cos(a) * radius, y, Math.sin(a) * radius]);
+          return /** @type {Vec3} */ ([
+            Math.cos(a) * radius,
+            y,
+            Math.sin(a) * radius,
+          ]);
         });
       const bottom = ring(1, 0);
       const top = ring(topRadius, 1);
@@ -161,8 +210,14 @@ export class MeshBuilder {
         ]);
       };
       const pick = (a, c) =>
-        typeof color === 'function'
-          ? color(vec3Normalize([(a[0] + c[0]) / 2, (a[1] + c[1]) / 2, (a[2] + c[2]) / 2]))
+        typeof color === "function"
+          ? color(
+              vec3Normalize([
+                (a[0] + c[0]) / 2,
+                (a[1] + c[1]) / 2,
+                (a[2] + c[2]) / 2,
+              ]),
+            )
           : color;
       for (let r = 0; r < rings; r++) {
         for (let s = 0; s < segments; s++) {
@@ -221,14 +276,22 @@ export class MeshBuilder {
               [b, c, d],
             ]) {
           const n = vec3Normalize(
-            vec3Cross(vec3Subtract(tri[1], tri[0]), vec3Subtract(tri[2], tri[0])),
+            vec3Cross(
+              vec3Subtract(tri[1], tri[0]),
+              vec3Subtract(tri[2], tri[0]),
+            ),
           );
           const centre = [
             (tri[0][0] + tri[1][0] + tri[2][0]) / 3,
             (tri[0][1] + tri[1][1] + tri[2][1]) / 3,
             (tri[0][2] + tri[1][2] + tri[2][2]) / 3,
           ];
-          this.triangle(tri[0], tri[1], tri[2], colorAt(centre[0], centre[1], centre[2], n));
+          this.triangle(
+            tri[0],
+            tri[1],
+            tri[2],
+            colorAt(centre[0], centre[1], centre[2], n),
+          );
         }
       }
     }

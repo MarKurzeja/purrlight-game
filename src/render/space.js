@@ -8,9 +8,9 @@
  *
  * Everything here is pure and deterministic, so it is unit-tested.
  */
-import { METRES_PER_PIXEL, WORLD_ORIGIN } from '../config.js';
-import { clamp, lerp } from '../core/math.js';
-import { LAKE, LANDMARKS } from '../data/village.js';
+import { METRES_PER_PIXEL, WORLD_ORIGIN } from "../config.js";
+import { clamp, lerp } from "../core/math.js";
+import { LAKE, LANDMARKS } from "../data/village.js";
 
 /** @typedef {[number, number, number]} Point3 */
 
@@ -79,7 +79,12 @@ const HILL_X = toX(LANDMARKS.lanternTower.x);
 const HILL_Z = toZ(LANDMARKS.lanternTower.y);
 
 /** The lake's ellipse in metres. */
-export const LAKE_SHAPE = Object.freeze({ x: LAKE_X, z: LAKE_Z, rx: LAKE_RX, rz: LAKE_RZ });
+export const LAKE_SHAPE = Object.freeze({
+  x: LAKE_X,
+  z: LAKE_Z,
+  rx: LAKE_RX,
+  rz: LAKE_RZ,
+});
 /** Height of the lake's surface. */
 export const WATER_LEVEL = -0.32;
 
@@ -100,10 +105,19 @@ export function pathAmount(X, Z) {
       ? 1 - smoothstep(1.1, 1.8, Math.abs(Z - pathCentre(X)))
       : 0;
   const fire =
-    1 - smoothstep(3.6, 4.6, Math.hypot(X - toX(LANDMARKS.fire.x), Z - toZ(LANDMARKS.fire.y)));
+    1 -
+    smoothstep(
+      3.6,
+      4.6,
+      Math.hypot(X - toX(LANDMARKS.fire.x), Z - toZ(LANDMARKS.fire.y)),
+    );
   const fountain =
     1 -
-    smoothstep(3, 3.8, Math.hypot(X - toX(LANDMARKS.fountain.x), Z - toZ(LANDMARKS.fountain.y)));
+    smoothstep(
+      3,
+      3.8,
+      Math.hypot(X - toX(LANDMARKS.fountain.x), Z - toZ(LANDMARKS.fountain.y)),
+    );
   return Math.max(onPath, fire, fountain);
 }
 
@@ -152,5 +166,9 @@ export function heightAt(X, Z) {
 export function worldPoint(x, y, height = 0) {
   const X = toX(x);
   const Z = toZ(y);
-  return [X, Math.max(heightAt(X, Z), WATER_LEVEL) + height * METRES_PER_PIXEL, Z];
+  return [
+    X,
+    Math.max(heightAt(X, Z), WATER_LEVEL) + height * METRES_PER_PIXEL,
+    Z,
+  ];
 }

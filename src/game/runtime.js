@@ -31,7 +31,7 @@ export const game = {
   player: {
     x: 800,
     y: 240,
-    direction: 'down',
+    direction: "down",
     walkTime: 0,
     moving: false,
     /** Seconds the player has been standing still (friendly cats come to rub against you). */
@@ -49,16 +49,19 @@ export const game = {
   /** @type {import('../render/effects.js').Flake[]} */ weather: [],
   /** @type {{ x: number, y: number, height: number, text: string, color: string, age: number }[]} */ floatingTexts:
     [],
-  /** @type {Interactable | null} The nearest thing the player can use. */ focus: null,
-  /** @type {string | null} The cat whose menu or minigame is open. */ selectedCatId: null,
-  /** @type {string | null} A soulmate cat leading the player to its secret. */ leadingCatId: null,
+  /** @type {Interactable | null} The nearest thing the player can use. */ focus:
+    null,
+  /** @type {string | null} The cat whose menu or minigame is open. */ selectedCatId:
+    null,
+  /** @type {string | null} A soulmate cat leading the player to its secret. */ leadingCatId:
+    null,
   /** Is the player sitting quietly? */
   sitting: false,
   /**
    * The selected tool in the tool bar: 'look' opens a cat's card, 'hand' strokes it, and a
    * food id feeds that food directly.
    */
-  tool: 'look',
+  tool: "look",
   /** @type {string | null} The cat being stroked right now. */
   strokingCatId: null,
   /** @type {Butterfly[]} */ butterflies: [],
@@ -70,6 +73,6 @@ export const game = {
 
 /** The current game state. Throws if no game is running, which would be a programming error. */
 export function currentState() {
-  if (!game.state) throw new Error('No game in progress');
+  if (!game.state) throw new Error("No game in progress");
   return game.state;
 }

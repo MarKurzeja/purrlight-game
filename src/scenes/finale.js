@@ -1,20 +1,20 @@
 /** The ending: you climb to the Lantern with your cats and light it. */
-import { clamp, lerp } from '../core/math.js';
-import { currentSeason, presentCats } from '../core/state.js';
-import { rand } from '../core/random.js';
-import { CAT_BY_ID } from '../data/cats.js';
-import { FINALE_LINES } from '../data/story.js';
-import { LANDMARKS } from '../data/village.js';
-import { playSound } from '../engine/audio.js';
-import { drawText } from '../engine/canvas.js';
-import { smokePoints, updateSmoke } from '../render/effects.js';
-import { drawCatModel, drawPlayerModel } from '../render/models.js';
-import { GRADE } from '../render/palettes.js';
-import { worldPoint } from '../render/space.js';
-import { chimneyTops, drawShadow, renderStage } from '../render/stage.js';
-import { currentState, game } from '../game/runtime.js';
-import { setHint } from '../ui/hud.js';
-import { showFinaleLetter } from '../ui/letters.js';
+import { clamp, lerp } from "../core/math.js";
+import { currentSeason, presentCats } from "../core/state.js";
+import { rand } from "../core/random.js";
+import { CAT_BY_ID } from "../data/cats.js";
+import { FINALE_LINES } from "../data/story.js";
+import { LANDMARKS } from "../data/village.js";
+import { playSound } from "../engine/audio.js";
+import { drawText } from "../engine/canvas.js";
+import { smokePoints, updateSmoke } from "../render/effects.js";
+import { drawCatModel, drawPlayerModel } from "../render/models.js";
+import { GRADE } from "../render/palettes.js";
+import { worldPoint } from "../render/space.js";
+import { chimneyTops, drawShadow, renderStage } from "../render/stage.js";
+import { currentState, game } from "../game/runtime.js";
+import { setHint } from "../ui/hud.js";
+import { showFinaleLetter } from "../ui/letters.js";
 
 const LINE_SECONDS = 4.2;
 const finale = {
@@ -25,10 +25,10 @@ const finale = {
 };
 
 export const FinaleScene = {
-  name: 'finale',
+  name: "finale",
 
   enter() {
-    currentState().phase = 'night';
+    currentState().phase = "night";
     Object.assign(finale, {
       elapsed: 0,
       line: 0,
@@ -41,8 +41,8 @@ export const FinaleScene = {
         at: rand(8, 15),
       })),
     });
-    setHint('');
-    playSound('chime');
+    setHint("");
+    playSound("chime");
   },
 
   update(dt) {
@@ -52,7 +52,7 @@ export const FinaleScene = {
       finale.line < FINALE_LINES.length
     ) {
       finale.line += 1;
-      playSound('chime');
+      playSound("chime");
     }
     game.smoke = updateSmoke(game.smoke, chimneyTops(), dt);
     if (finale.elapsed > 17 && !finale.letterShown) {
@@ -89,9 +89,17 @@ export const FinaleScene = {
     renderStage({
       state,
       seasonId: currentSeason(state).id,
-      timeOfDay: { from: GRADE.night, to: GRADE.dusk, blend: clamp((t - 3) / 12) * 0.45 },
+      timeOfDay: {
+        from: GRADE.night,
+        to: GRADE.dusk,
+        blend: clamp((t - 3) / 12) * 0.45,
+      },
       time: game.time,
-      camera: { eye: /** @type {any} */ (eye), target: /** @type {any} */ (target), fov: 42 },
+      camera: {
+        eye: /** @type {any} */ (eye),
+        target: /** @type {any} */ (target),
+        fov: 42,
+      },
       windowGlow: 1,
       fireGlow: 0.8,
       lanternGlow: glow,
@@ -103,13 +111,21 @@ export const FinaleScene = {
         });
         presentCats(state).forEach((c, i) => {
           const progress = clamp((t - i * 0.7) / 6);
-          const x = lerp(1180 + (i % 4) * 20, lantern.x - 60 + (i % 5) * 18, progress);
-          const y = lerp(230 + (i % 3) * 22, 214 + (i % 2) * 14 + Math.floor(i / 5) * 12, progress);
+          const x = lerp(
+            1180 + (i % 4) * 20,
+            lantern.x - 60 + (i % 5) * 18,
+            progress,
+          );
+          const y = lerp(
+            230 + (i % 3) * 22,
+            214 + (i % 2) * 14 + Math.floor(i / 5) * 12,
+            progress,
+          );
           drawShadow(x, y, 0.5);
           drawCatModel(
             painter,
             CAT_BY_ID[c.id].coat,
-            progress < 1 ? 'walk' : 'sit',
+            progress < 1 ? "walk" : "sit",
             worldPoint(x, y),
             {
               heading: progress < 1 ? 0.1 : Math.PI * 0.7,

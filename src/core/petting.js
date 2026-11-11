@@ -2,9 +2,9 @@
  * The petting minigame as a pure state machine. The player rubs the cat; each cat has a
  * hidden sweet spot and a preferred stroke speed. Touching the belly frightens every cat.
  */
-import { BELLY_ZONE, PERSONALITIES, PET_ZONES } from '../data/cats.js';
-import { clamp, distance, lerp } from './math.js';
-import { pickFrom } from './random.js';
+import { BELLY_ZONE, PERSONALITIES, PET_ZONES } from "../data/cats.js";
+import { clamp, distance, lerp } from "./math.js";
+import { pickFrom } from "./random.js";
 
 /** @typedef {import('./random.js').Rng} Rng */
 
@@ -40,7 +40,8 @@ export function createPettingSession({ personality, sweetSpot, skittish }) {
     personality,
     sweetSpot,
     moveTimer:
-      PERSONALITIES[/** @type {keyof typeof PERSONALITIES} */ (personality)].sweetSpotMovesEvery,
+      PERSONALITIES[/** @type {keyof typeof PERSONALITIES} */ (personality)]
+        .sweetSpotMovesEvery,
     fill: 0,
     fear: 0,
     timeLeft: PETTING_SECONDS,
@@ -51,14 +52,16 @@ export function createPettingSession({ personality, sweetSpot, skittish }) {
     goodSpeed: false,
     onBelly: false,
     active: false,
-    hint: '',
+    hint: "",
     skittish,
   };
 }
 
 /** Is a point on the cat's body or head (portrait coordinates)? */
 export function isOnCat(x, y) {
-  return distance(x, y, 176, 126) < 54 || (x > 178 && x < 362 && y > 116 && y < 226);
+  return (
+    distance(x, y, 176, 126) < 54 || (x > 178 && x < 362 && y > 116 && y < 226)
+  );
 }
 
 /**
@@ -71,7 +74,10 @@ export function isOnCat(x, y) {
  *   'purring' = success, 'bolted' = scared away, 'timeout' = ran out of time without success.
  */
 export function stepPetting(session, hand, dt, rng) {
-  const traits = PERSONALITIES[/** @type {keyof typeof PERSONALITIES} */ (session.personality)];
+  const traits =
+    PERSONALITIES[
+      /** @type {keyof typeof PERSONALITIES} */ (session.personality)
+    ];
   session.timeLeft -= dt;
 
   if (traits.sweetSpotMovesEvery > 0) {
@@ -87,17 +93,20 @@ export function stepPetting(session, hand, dt, rng) {
 
   if (session.lastHand) {
     const instant =
-      distance(hand.x, hand.y, session.lastHand.x, session.lastHand.y) / Math.max(dt, 0.001);
+      distance(hand.x, hand.y, session.lastHand.x, session.lastHand.y) /
+      Math.max(dt, 0.001);
     session.speed = lerp(session.speed, instant, 0.18);
   }
   session.lastHand = { x: hand.x, y: hand.y };
 
-  const zone = PET_ZONES[/** @type {keyof typeof PET_ZONES} */ (session.sweetSpot)];
+  const zone =
+    PET_ZONES[/** @type {keyof typeof PET_ZONES} */ (session.sweetSpot)];
   const toSpot = distance(hand.x, hand.y, zone.x, zone.y);
   const [slowest, fastest] = traits.strokeSpeed;
   session.closeness = clamp(1 - (toSpot - zone.r) / 170);
   session.inSpot = toSpot < zone.r + 6;
-  session.onBelly = distance(hand.x, hand.y, BELLY_ZONE.x, BELLY_ZONE.y) < BELLY_ZONE.r;
+  session.onBelly =
+    distance(hand.x, hand.y, BELLY_ZONE.x, BELLY_ZONE.y) < BELLY_ZONE.r;
   session.goodSpeed = session.speed >= slowest && session.speed <= fastest;
   session.active = hand.touching && isOnCat(hand.x, hand.y);
 
@@ -105,22 +114,24 @@ export function stepPetting(session, hand, dt, rng) {
     const startle = session.skittish ? 1.4 : 1;
     if (session.onBelly) {
       session.fear += dt * 0.5 * traits.fright * startle;
-      session.hint = 'Not the belly!';
+      session.hint = "Not the belly!";
     } else if (session.inSpot && session.goodSpeed) {
       session.fill += dt / SECONDS_TO_FILL;
-      session.hint = '';
+      session.hint = "";
     } else if (session.inSpot) {
       session.fear += dt * 0.03;
-      session.hint = session.speed > fastest ? 'Gentler, slower' : 'A little brisker';
+      session.hint =
+        session.speed > fastest ? "Gentler, slower" : "A little brisker";
     } else {
-      session.fear += dt * (0.08 + (1 - session.closeness) * 0.12) * traits.fright * startle;
-      session.hint = '';
+      session.fear +=
+        dt * (0.08 + (1 - session.closeness) * 0.12) * traits.fright * startle;
+      session.hint = "";
     }
   }
 
-  if (session.fill >= 1) return 'purring';
-  if (session.fear >= 1) return 'bolted';
-  if (session.timeLeft <= 0) return session.fill > 0.5 ? 'purring' : 'timeout';
+  if (session.fill >= 1) return "purring";
+  if (session.fear >= 1) return "bolted";
+  if (session.timeLeft <= 0) return session.fill > 0.5 ? "purring" : "timeout";
   return null;
 }
 

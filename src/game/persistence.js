@@ -2,12 +2,12 @@
  * Saving and loading. Saves go to localStorage and, when the page runs as a Claude artifact
  * with a signed-in viewer, to a private per-user cloud document as well.
  */
-import { SAVE_KEY } from '../config.js';
-import { parseSave, serializeState } from '../core/save.js';
-import { game } from './runtime.js';
+import { SAVE_KEY } from "../config.js";
+import { parseSave, serializeState } from "../core/save.js";
+import { game } from "./runtime.js";
 
 /** Older keys to migrate from, newest first. */
-const LEGACY_KEYS = ['purrlight.save.v2'];
+const LEGACY_KEYS = ["purrlight.save.v2"];
 
 /** @type {{ set: (doc: object) => Promise<void> } | null} */
 let cloudDocument = null;
@@ -53,15 +53,16 @@ export async function connectCloudSave(onNewerSave, attempt = 0) {
     return;
   }
   try {
-    const [db, user] = await Promise.all([host.use('db'), host.use('user')]);
+    const [db, user] = await Promise.all([host.use("db"), host.use("user")]);
     if (!db || !user) return;
     const userId = await user.id();
     if (!userId) return;
-    cloudDocument = db.collection(`data/users/${userId}`).doc('save');
+    cloudDocument = db.collection(`data/users/${userId}`).doc("save");
     const snapshot = await /** @type {any} */ (cloudDocument).get();
     if (!snapshot.exists) return;
     const remote = parseSave(snapshot.data().json);
-    if (remote && remote.savedAt > (game.savedGame?.savedAt ?? 0)) onNewerSave(remote);
+    if (remote && remote.savedAt > (game.savedGame?.savedAt ?? 0))
+      onNewerSave(remote);
   } catch {
     /* cloud saves are a bonus; local saves keep working */
   }

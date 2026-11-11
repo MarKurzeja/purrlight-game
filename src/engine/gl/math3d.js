@@ -131,8 +131,19 @@ export function transformDirection(m, [x, y, z]) {
 
 /** The inverse-transpose of the upper 3x3, used to transform normals. @returns {Float32Array} */
 export function normalMatrix(m) {
-  const [a, b, c, d, e, f, g, h, i] = [m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10]];
-  const det = a * (e * i - f * h) - d * (b * i - c * h) + g * (b * f - c * e) || 1;
+  const [a, b, c, d, e, f, g, h, i] = [
+    m[0],
+    m[1],
+    m[2],
+    m[4],
+    m[5],
+    m[6],
+    m[8],
+    m[9],
+    m[10],
+  ];
+  const det =
+    a * (e * i - f * h) - d * (b * i - c * h) + g * (b * f - c * e) || 1;
   // inverse of [[a d g][b e h][c f i]] (columns), then transposed
   return new Float32Array([
     (e * i - f * h) / det,
