@@ -136,8 +136,9 @@ export const EveningScene = {
     evening.rows.slice(0, evening.revealed + 1).forEach((row, i) => {
       const at = toScreen(row.x, row.y, 16 + (i % 2) * 5);
       drawText(`+${row.purrs}`, at.x, at.y, { size: 9, color: "#ffe9a2" });
-      if (row.memory)
+      if (row.memory) {
         drawText("memory", at.x, at.y - 10, { size: 7, color: "#bfe0f4" });
+      }
     });
     drawText("Evening at the fire", 240, 24, { size: 13 });
     drawText(

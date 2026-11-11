@@ -47,8 +47,9 @@ test("events complete notes, pay their reward, and the full set pays a bonus onc
   result = recordEvent(state, "cast");
   assert.equal(result.completed.length, 0, "a finished note is not paid twice");
 
-  for (const event of ["gather", "gather", "feed", "coax"])
+  for (const event of ["gather", "gather", "feed", "coax"]) {
     recordEvent(state, event);
+  }
   result = recordEvent(state, "pet");
   assert.ok(result.bonus > 0);
   assert.equal(recordEvent(state, "pet").bonus, 0);

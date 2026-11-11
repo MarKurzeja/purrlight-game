@@ -303,11 +303,12 @@ function chalet(m, o) {
   for (const side of [-1, 1]) {
     const x = cx + side * (W / 2 + 0.1);
     if (open) windows.box(T(x, upperY, cz + 0.6, 0.06, 0.75, 0.7), "#3d5470");
-    else
+    else {
       solid.box(
         T(x, upperY, cz + 0.6, 0.08, 0.8, 0.75),
         fade(o.shutters, 0.45),
       );
+    }
   }
   const ridge = eave + roofHeight;
   if (o.chimney === false) return { chimney: null, ridge };
@@ -648,9 +649,9 @@ function lanternTower(m, state, snowy) {
     solid.box(T(X + dx, top + 1.3, Z + dz, 0.16, 2.0, 0.16), "#3e3e4e");
   }
   const light = /** @type {Vec3} */ ([X, top + 1.3, Z]);
-  if (state.lantern.lens)
+  if (state.lantern.lens) {
     glass.box(T(X, top + 1.3, Z, 1.5, 1.9, 1.5), "#fff2c8");
-  else {
+  } else {
     for (const side of [-1, 1]) {
       solid.box(T(X + side * 0.76, top + 1.1, Z, 0.06, 1.4, 1.4), "#8a6a50");
     }
@@ -811,10 +812,12 @@ function squareProps(m, seasonId) {
   // The goat's pasture.
   const gx = toX(LANDMARKS.goat.x);
   const gz = toZ(LANDMARKS.goat.y) - 1.6;
-  for (let i = 0; i < 9; i++)
+  for (let i = 0; i < 9; i++) {
     solid.box(T(gx - 4 + i * 1.1, 0.5, gz, 0.14, 1.1, 0.14), "#8a6a50");
-  for (const y of [0.45, 0.85])
+  }
+  for (const y of [0.45, 0.85]) {
     solid.box(T(gx + 0.4, y, gz, 9.0, 0.08, 0.06), "#a8865c");
+  }
   solid.cylinder(
     mat4Transform({
       x: gx + 4.6,

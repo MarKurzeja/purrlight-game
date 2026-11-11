@@ -20,8 +20,9 @@ export function lanternReady(state) {
  * @param {GameState} state
  */
 export function nextGoal(state) {
-  if (state.lanternLit || state.relaxMode)
+  if (state.lanternLit || state.relaxMode) {
     return "Enjoy the village. No more goals, only cats.";
+  }
   const nextBuilding = Object.entries(BUILDINGS)
     .filter(([id]) => !state.built[id])
     .sort(([, a], [, b]) => a.cost - b.cost)[0];

@@ -42,8 +42,9 @@ function readModule(path) {
   const source = readFileSync(path, "utf8");
   const code = withoutComments(source);
   for (const [pattern, what] of FORBIDDEN) {
-    if (pattern.test(code))
+    if (pattern.test(code)) {
       throw new Error(`${path}: ${what} are not supported by the bundler`);
+    }
   }
   const imports = [...source.matchAll(IMPORT_RE)].map((m) => {
     const names = m[1]
@@ -51,8 +52,9 @@ function readModule(path) {
       .map((n) => n.trim())
       .filter(Boolean);
     const renamed = names.find((n) => /\sas\s/.test(n));
-    if (renamed)
+    if (renamed) {
       throw new Error(`${path}: renamed import "${renamed}" is not supported`);
+    }
     return { names, from: resolve(dirname(path), m[2]) };
   });
   const declarations = [...source.matchAll(DECLARATION_RE)];
@@ -94,11 +96,11 @@ export function bundle(entry) {
   for (const path of order) {
     for (const declared of modules.get(path)?.declared ?? []) {
       const owner = owners.get(declared);
-      if (owner)
+      if (owner) {
         errors.push(
           `"${declared}" is declared in both ${owner} and ${name(path)}`,
         );
-      else owners.set(declared, name(path));
+      } else owners.set(declared, name(path));
     }
   }
   for (const path of order) {
@@ -113,8 +115,9 @@ export function bundle(entry) {
       }
     }
   }
-  if (errors.length)
+  if (errors.length) {
     throw new Error(`Bundling failed:\n  ${errors.join("\n  ")}`);
+  }
 
   const body = order
     .map((path) => {

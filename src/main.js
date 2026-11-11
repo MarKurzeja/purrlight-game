@@ -89,8 +89,9 @@ function boot() {
   qs("#sit").addEventListener("click", () => toggleSitting());
   startProgressTracking();
   setDefaultCloseHandler(() => {
-    if (game.state?.phase === "night" && game.scene?.name === "world")
+    if (game.state?.phase === "night" && game.scene?.name === "world") {
       openNightMenu();
+    }
   });
   setMusicContext(() => ({
     phase: game.state?.phase ?? "night",

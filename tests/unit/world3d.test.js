@@ -53,10 +53,12 @@ const REBUILT = {
 };
 
 test("game coordinates map to metres and back", () => {
-  for (const x of [0, 740, WORLD_WIDTH])
+  for (const x of [0, 740, WORLD_WIDTH]) {
     assert.ok(Math.abs(fromX(toX(x)) - x) < 1e-9);
-  for (const y of [GROUND_TOP, 245, GROUND_BOTTOM])
+  }
+  for (const y of [GROUND_TOP, 245, GROUND_BOTTOM]) {
     assert.ok(Math.abs(fromZ(toZ(y)) - y) < 1e-9);
+  }
   assert.ok(
     Math.abs(worldPoint(740, 245)[0]) < 1e-9,
     "the origin is the middle of the street",

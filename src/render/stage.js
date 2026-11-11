@@ -428,8 +428,9 @@ export function renderStage(o) {
   r.setLighting(blendLighting(o.timeOfDay, o.seasonId));
   r.beginFrame();
   const v = stageState.valley;
-  for (const mesh of [v.far, v.near, v.forest, v.details])
+  for (const mesh of [v.far, v.near, v.forest, v.details]) {
     if (mesh) r.draw(mesh, IDENTITY);
+  }
   const village = stageState.village;
   if (village.solid) r.draw(village.solid, IDENTITY);
   const glow = o.windowGlow ?? 0;

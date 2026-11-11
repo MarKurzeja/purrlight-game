@@ -58,8 +58,9 @@ test("every building has a layout and fires refer to real buildings", () => {
       id,
     );
   }
-  for (const fire of FIRES)
+  for (const fire of FIRES) {
     if (fire.needs) assert.ok(BUILDINGS[fire.needs], fire.id);
+  }
 });
 
 test("recipes use known items and bond tiers are increasing", () => {
@@ -67,8 +68,9 @@ test("recipes use known items and bond tiers are increasing", () => {
     assert.ok(FOODS[r.output]);
     for (const item of Object.keys(r.ingredients)) assert.ok(ITEMS[item], item);
   }
-  for (let i = 1; i < BOND_TIERS.length; i++)
+  for (let i = 1; i < BOND_TIERS.length; i++) {
     assert.ok(BOND_TIERS[i].min > BOND_TIERS[i - 1].min);
+  }
 });
 
 test("every food has its own tool bar icon", async () => {

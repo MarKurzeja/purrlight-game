@@ -61,8 +61,9 @@ export async function connectCloudSave(onNewerSave, attempt = 0) {
     const snapshot = await /** @type {any} */ (cloudDocument).get();
     if (!snapshot.exists) return;
     const remote = parseSave(snapshot.data().json);
-    if (remote && remote.savedAt > (game.savedGame?.savedAt ?? 0))
+    if (remote && remote.savedAt > (game.savedGame?.savedAt ?? 0)) {
       onNewerSave(remote);
+    }
   } catch {
     /* cloud saves are a bonus; local saves keep working */
   }

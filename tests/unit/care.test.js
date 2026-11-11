@@ -147,8 +147,9 @@ test("sitting quietly coaxes a wary cat up to a daily cap", () => {
   const cat = state.cats.pim;
   const start = cat.warmth;
   let completed = 0;
-  for (let i = 0; i < 100; i++)
+  for (let i = 0; i < 100; i++) {
     if (sitWith(state, "pim", 0.5).completedCoax) completed++;
+  }
   assert.ok(Math.abs(cat.warmth - (start + BALANCE.coaxDailyCap)) < 1e-9);
   assert.equal(cat.coaxToday, BALANCE.coaxDailyCap);
   assert.ok(completed >= 1);

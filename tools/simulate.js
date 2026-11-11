@@ -179,8 +179,9 @@ export function simulateJourney(
     /* Night: read memories, then spend. */
     if (state.built.library) {
       for (const { id } of presentCats(state)) {
-        for (let i = 0; i < state.cats[id].memories; i++)
+        for (let i = 0; i < state.cats[id].memories; i++) {
           readMemory(state, id, i);
+        }
       }
     }
     const shop = () => {
@@ -241,8 +242,9 @@ export function simulateJourney(
 
     for (const id of Object.keys(BUILDINGS)) if (state.built[id]) mark(id);
     if (state.memoriesRead.length) mark("first memory read");
-    if (presentCats(state).every((c) => !isWary(state, c.id)))
+    if (presentCats(state).every((c) => !isWary(state, c.id))) {
       mark("no wary cats");
+    }
     if (lanternReady(state)) {
       mark("lantern ready");
       state.lanternLit = true;

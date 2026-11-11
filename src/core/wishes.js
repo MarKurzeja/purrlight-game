@@ -31,8 +31,9 @@ export function rollWish(state, catId, rng) {
 
 /** @param {GameState} state @param {Rng} rng */
 export function rollWishes(state, rng) {
-  for (const cat of presentCats(state))
+  for (const cat of presentCats(state)) {
     state.cats[cat.id].wish = rollWish(state, cat.id, rng);
+  }
 }
 
 /**

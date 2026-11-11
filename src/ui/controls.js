@@ -301,8 +301,9 @@ export function bindControls() {
     const button = /** @type {HTMLElement} */ (event.target).closest(
       "[data-action]",
     );
-    if (!(button instanceof HTMLElement) || button.hasAttribute("disabled"))
+    if (!(button instanceof HTMLElement) || button.hasAttribute("disabled")) {
       return;
+    }
     if (suppressNextClick) {
       suppressNextClick = false;
       return;
@@ -352,8 +353,9 @@ export function bindControls() {
   });
   qs("#help-button").addEventListener("click", () => openHelp());
   qs("#journal-button").addEventListener("click", () => {
-    if (game.state && game.scene?.name === "world" && !game.paused)
+    if (game.state && game.scene?.name === "world" && !game.paused) {
       openJournal();
+    }
   });
   qs("#music-toggle").addEventListener("click", (event) => {
     initAudio();

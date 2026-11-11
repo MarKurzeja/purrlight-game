@@ -15,13 +15,16 @@ import { currentState, game } from "./runtime.js";
 
 /** Can the player or a cat stand here? */
 export function isBlocked(x, y) {
-  if (x < 8 || x > WORLD_WIDTH - 8 || y < GROUND_TOP || y > GROUND_BOTTOM)
+  if (x < 8 || x > WORLD_WIDTH - 8 || y < GROUND_TOP || y > GROUND_BOTTOM) {
     return true;
-  if (((x - LAKE.x) / LAKE.rx) ** 2 + ((y - LAKE.y) / LAKE.ry) ** 2 < 1)
+  }
+  if (((x - LAKE.x) / LAKE.rx) ** 2 + ((y - LAKE.y) / LAKE.ry) ** 2 < 1) {
     return true;
+  }
   if (distance(x, y, LANDMARKS.fire.x, LANDMARKS.fire.y) < 12) return true;
-  if (distance(x, y, LANDMARKS.fountain.x, LANDMARKS.fountain.y) < 18)
+  if (distance(x, y, LANDMARKS.fountain.x, LANDMARKS.fountain.y) < 18) {
     return true;
+  }
   return false;
 }
 
@@ -29,8 +32,9 @@ function freeSpot() {
   for (let i = 0; i < 40; i++) {
     const x = rand(40, WORLD_WIDTH - 90);
     const y = rand(GROUND_TOP + 2, GROUND_BOTTOM - 2);
-    if (!isBlocked(x, y) && Math.abs(x - LANDMARKS.fire.x) > 30)
+    if (!isBlocked(x, y) && Math.abs(x - LANDMARKS.fire.x) > 30) {
       return { x, y };
+    }
   }
   return { x: 800, y: 240 };
 }

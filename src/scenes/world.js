@@ -173,8 +173,9 @@ function startStroking(catId) {
     return;
   }
   game.strokingCatId = catId;
-  if (!input.pointer.down && !input.held.e)
+  if (!input.pointer.down && !input.held.e) {
     toast("Hold the button (or E) to keep stroking.");
+  }
 }
 
 /** Stroking continues while held and close enough. @returns {boolean} whether a cat is being stroked */
@@ -193,8 +194,9 @@ function updateStroking(dt) {
     game.strokingCatId = null;
     return false;
   }
-  if (Math.random() < dt * 3)
+  if (Math.random() < dt * 3) {
     spawnBurst(game.particles, e.x, e.y, "#f08aa8", 1, "heart", 14);
+  }
   if (result.satisfied) {
     game.strokingCatId = null;
     e.emote = { kind: "heart", at: game.time };
@@ -376,8 +378,9 @@ function setStageCursor(cursor) {
 
 /** Click or tap: walk there, and use whatever was clicked on arrival. */
 function handlePointer() {
-  if (!input.pointer.pressedThisFrame || game.sitting || game.strokingCatId)
+  if (!input.pointer.pressedThisFrame || game.sitting || game.strokingCatId) {
     return;
+  }
   const p = game.player;
   const hit = pickAt(input.pointer.x, input.pointer.y);
   const ground = hit ? null : groundUnder(input.pointer.x, input.pointer.y);
@@ -407,8 +410,9 @@ function handlePointer() {
 /** Sitting quietly, greetings, wishes reappearing, and bond level-ups. */
 function updateCompanionship(dt) {
   const state = currentState();
-  if (game.sitting && (game.player.moving || input.pointer.pressedThisFrame))
+  if (game.sitting && (game.player.moving || input.pointer.pressedThisFrame)) {
     toggleSitting(false);
+  }
   let someoneClose = false;
   for (const c of presentCats(state)) {
     const e = game.cats[c.id];
@@ -520,8 +524,9 @@ function facingOf(
   let goal = f.heading;
   if (face !== null) goal = face;
   else if (Math.hypot(dx, dy) > 0.05) goal = Math.atan2(-dy, dx);
-  else if (idleTowardsCamera)
+  else if (idleTowardsCamera) {
     goal = -Math.PI / 2 + (Math.cos(f.heading) >= 0 ? 0.75 : -0.75);
+  }
   f.heading += wrapAngle(goal - f.heading) * Math.min(1, game.dt * 8);
   f.x = entity.x;
   f.y = entity.y;
@@ -704,9 +709,9 @@ function drawCatOverlays(ctx) {
     const at = toScreen(target.x, target.y, target.height * 0.6);
     const y = clamp(at.y, 24, VIEW_HEIGHT - 30);
     if (at.x < 4) drawGuideMarker(ctx, 8, y, -1, game.time);
-    else if (at.x > VIEW_WIDTH - 4)
+    else if (at.x > VIEW_WIDTH - 4) {
       drawGuideMarker(ctx, VIEW_WIDTH - 8, y, 1, game.time);
-    else
+    } else {
       drawGuideMarker(
         ctx,
         at.x,
@@ -714,6 +719,7 @@ function drawCatOverlays(ctx) {
         0,
         game.time,
       );
+    }
   }
   if (moveMarker && game.player.walkTarget) {
     const age = game.time - moveMarker.at;
@@ -752,8 +758,9 @@ function labelFor(target) {
   if (target.kind === "cat") return state.cats[target.catId].name;
   if (target.kind === "lantern") return "The Great Lantern";
   const kind = target.pickup.kind;
-  if (kind === "lake")
+  if (kind === "lake") {
     return `The lake (${BALANCE.castsPerDay - state.castsToday} casts left)`;
+  }
   if (kind === "goat") return "Clover the goat";
   if (kind === "rustle") return "Something rustles";
   return (
@@ -853,8 +860,9 @@ export const WorldScene = {
 
   onKey(key) {
     if (game.paused) return;
-    if ((key === "e" || key === " " || key === "Enter") && game.focus)
+    if ((key === "e" || key === " " || key === "Enter") && game.focus) {
       interact(game.focus);
+    }
     if (key === "j") openJournal();
     if (key === "q") toggleSitting();
     if (/^[1-7]$/.test(key)) selectToolByNumber(Number(key));

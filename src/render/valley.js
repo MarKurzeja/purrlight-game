@@ -57,8 +57,9 @@ function terrainColor(seasonId, X, Y, Z, n) {
       jitter,
     );
   }
-  if (Y > snowLine(seasonId) - v * 12 && slope < 0.7)
+  if (Y > snowLine(seasonId) - v * 12 && slope < 0.7) {
     return rampColor(SNOW, 0.4 + v * 0.6, jitter);
+  }
   if (slope > 0.5 || (Z < -48 && slope > 0.22)) {
     return rampColor(palette.rock, lerp(0.15, 0.9, v) - slope * 0.3, jitter);
   }

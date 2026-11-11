@@ -19,8 +19,9 @@ function phaseSeconds(state) {
  * @returns {boolean} true once the phase has run out of time.
  */
 export function advanceClock(state, seconds) {
-  if (state.relaxMode || (state.phase !== "dawn" && state.phase !== "day"))
+  if (state.relaxMode || (state.phase !== "dawn" && state.phase !== "day")) {
     return false;
+  }
   state.clock += seconds / phaseSeconds(state);
   return state.clock >= 1;
 }
@@ -56,8 +57,9 @@ export function applyDayWeather(state, seconds) {
     state.relaxMode ||
     state.phase !== "day" ||
     currentSeason(state).id !== "winter"
-  )
+  ) {
     return;
+  }
   for (const cat of presentCats(state)) {
     changeWarmth(state.cats[cat.id], -WINTER_CHILL_PER_SECOND * seconds);
   }

@@ -7,8 +7,9 @@ import { BALANCE } from "../../src/config.js";
 test("wary cats only wish for food or company", () => {
   const state = newGame();
   const rng = seeded(5);
-  for (let i = 0; i < 100; i++)
+  for (let i = 0; i < 100; i++) {
     assert.ok(["food", "sit"].includes(rollWish(state, "pim", rng)));
+  }
 });
 
 test("warm cats wish for food, pets or play", () => {

@@ -19,8 +19,9 @@ export function huntReward(state, mice) {
   const thrill = Math.min(4 + mice, 10);
   for (const c of presentCats(state)) {
     const hunter = CAT_BY_ID[c.id].personality === "hunter";
-    if (!isWary(state, c.id) || hunter)
+    if (!isWary(state, c.id) || hunter) {
       changeWarmth(state.cats[c.id], thrill * (hunter ? 2 : 1));
+    }
   }
   return { fish: caught ? fish : null };
 }

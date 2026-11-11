@@ -18,11 +18,12 @@ function count(event, amount = 1) {
     playSound("chime");
     toast(`Done: ${note.label}. +${note.reward} Purrs.`);
   }
-  if (bonus)
+  if (bonus) {
     setTimeout(
       () => toast(`All of today’s notes done. +${bonus} bonus Purrs.`),
       900,
     );
+  }
   if (completed.length) refreshGoals({ flash: true });
 }
 
@@ -40,8 +41,9 @@ function tryWish(catId, kind) {
   toast(
     `Wish granted: ${state.cats[catId].name} wanted ${WISHES[kind].label}. +8 Warmth, +3 Bond.`,
   );
-  if (result.wantsMore)
+  if (result.wantsMore) {
     game.wishTimers[catId] = game.time + 25 + Math.random() * 20;
+  }
   gameEvents.emit("wish:granted", { catId, kind });
 }
 

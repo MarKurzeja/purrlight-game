@@ -47,8 +47,9 @@ export function mealWarmth(state, catId, food) {
 export function feedCat(state, catId, food) {
   const cat = state.cats[catId];
   if (!FOODS[food]) return { ok: false, reason: "That is not food." };
-  if ((state.bag[food] ?? 0) <= 0)
+  if ((state.bag[food] ?? 0) <= 0) {
     return { ok: false, reason: "You have none left." };
+  }
   if (cat.mealsToday >= BALANCE.mealsPerDay) {
     return { ok: false, reason: `${cat.name} is full for today.` };
   }

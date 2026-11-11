@@ -222,8 +222,9 @@ export function sitWith(state, catId, seconds) {
 export function strokeCat(state, catId, seconds) {
   const cat = state.cats[catId];
   if (isWary(state, catId)) return { ok: false, reason: "wary" };
-  if (cat.strokeToday >= BALANCE.strokeDailyCap)
+  if (cat.strokeToday >= BALANCE.strokeDailyCap) {
     return { ok: false, reason: "enough" };
+  }
   const warmth = Math.min(
     BALANCE.strokeDailyCap - cat.strokeToday,
     seconds * BALANCE.strokeWarmthPerSecond,

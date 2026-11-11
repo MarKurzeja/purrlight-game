@@ -298,9 +298,9 @@ export function createRenderer(canvas) {
     gl.depthMask(false);
     state.transparent.sort((a, b) => b.depth - a.depth);
     for (const item of state.transparent) {
-      if (item.options.unlit && item.options.emissive)
+      if (item.options.unlit && item.options.emissive) {
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-      else gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      } else gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       drawNow(item.mesh, item.model, item.options);
     }
     gl.depthMask(true);

@@ -118,8 +118,9 @@ export const fishingAccuracy = (session) =>
 export function judgeCatch(accuracy, rod) {
   if (accuracy >= 0.92 && rod >= 2) return { fish: "moonkoi", quantity: 1 };
   if (accuracy >= 0.68 && rod >= 1) return { fish: "trout", quantity: 1 };
-  if (accuracy >= 0.45)
+  if (accuracy >= 0.45) {
     return { fish: "sardine", quantity: accuracy >= 0.8 ? 2 : 1 };
+  }
   if (accuracy >= 0.2) return { fish: "sardine", quantity: 1 };
   return { fish: null, quantity: 0 };
 }

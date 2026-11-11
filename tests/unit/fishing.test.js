@@ -19,8 +19,9 @@ test("better rods mean more notes and wider timing", () => {
 
 test("notes are in time order and in valid lanes", () => {
   const s = createFishingSession(1, seeded(4));
-  for (let i = 1; i < s.notes.length; i++)
+  for (let i = 1; i < s.notes.length; i++) {
     assert.ok(s.notes[i].time > s.notes[i - 1].time);
+  }
   for (const n of s.notes) assert.ok(n.lane >= 0 && n.lane < 3);
 });
 
@@ -45,8 +46,9 @@ test("a perfect run scores 100% and the session ends after the last note", () =>
   let finished = false;
   for (let i = 0; i < 5000 && !finished; i++) {
     for (const n of s.notes) {
-      if (n.state === "waiting" && s.time >= n.time - 0.004)
+      if (n.state === "waiting" && s.time >= n.time - 0.004) {
         pressLane(s, n.lane);
+      }
     }
     finished = stepFishing(s, 0.005).finished;
   }

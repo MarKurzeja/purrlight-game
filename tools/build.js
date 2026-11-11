@@ -17,8 +17,9 @@ const { code, modules } = bundle(resolve(root, "src/main.js"));
 const STYLE_LINK = '<link rel="stylesheet" href="src/styles.css" />';
 const MODULE_SCRIPT = '<script type="module" src="src/main.js"></script>';
 for (const marker of [STYLE_LINK, MODULE_SCRIPT]) {
-  if (!html.includes(marker))
+  if (!html.includes(marker)) {
     throw new Error(`index.html is missing: ${marker}`);
+  }
 }
 const safeCode = code.replace(/<\/script/gi, "<\\/script");
 const page = html

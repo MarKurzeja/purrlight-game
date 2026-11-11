@@ -55,8 +55,9 @@ export function bindInput(stage, surface, hooks) {
   addEventListener("keydown", (event) => {
     const target = /** @type {HTMLElement} */ (event.target);
     if (/INPUT|SELECT|TEXTAREA/.test(target.tagName)) return;
-    if (MOVEMENT_KEYS.includes(event.key) && target.tagName !== "BUTTON")
+    if (MOVEMENT_KEYS.includes(event.key) && target.tagName !== "BUTTON") {
       event.preventDefault();
+    }
     const key = normalise(event.key);
     if (!input.held[key]) input.pressed.add(key);
     input.held[key] = true;

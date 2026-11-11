@@ -32,8 +32,9 @@ export function availableTools() {
 /** One line under the tool bar: what the selected tool does. */
 export function toolDescription(tool) {
   const use = IS_TOUCH ? "Tap" : "Click";
-  if (tool === "look")
+  if (tool === "look") {
     return `<b>Look</b> ${use} a cat to see how it feels and what it wants.`;
+  }
   if (tool === "hand") {
     return `<b>Pet</b> ${IS_TOUCH ? "Press and hold" : "Hold the mouse or E"} on a friendly cat to stroke it.`;
   }
@@ -45,8 +46,9 @@ export function toolDescription(tool) {
 /** A short explanation of what clicking a cat does with the selected tool. */
 export function toolHint() {
   if (game.tool === "hand") return "Pet: press and hold on a cat to stroke it.";
-  if (FOODS[game.tool])
+  if (FOODS[game.tool]) {
     return `${FOODS[game.tool].name}: click a cat to give it some.`;
+  }
   return "";
 }
 

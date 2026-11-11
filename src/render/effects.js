@@ -196,8 +196,9 @@ export function drawWishBubble(ctx, x, y, wish, time, alpha = 1) {
       break;
     case "pets":
       rect(ctx, x - 3, y - 8, 6, 4, "#f0c4a0");
-      for (const finger of [-3, -1, 1])
+      for (const finger of [-3, -1, 1]) {
         rect(ctx, x + finger, y - 11, 1, 3, "#f0c4a0");
+      }
       rect(ctx, x + 3, y - 9, 1, 2, "#f0c4a0");
       break;
     case "play":
@@ -220,12 +221,14 @@ export function drawGuideMarker(ctx, x, y, direction, time) {
     x += direction * Math.sin(time * 6) * 2;
     rect(ctx, x - direction * 4, y - 2, 5, 5, "#c8423c");
     rect(ctx, x, y - 6, 1, 13, "#c8423c");
-    for (let i = 1; i < 7; i++)
+    for (let i = 1; i < 7; i++) {
       rect(ctx, x + direction * i, y - 6 + i, 1, 13 - 2 * i, "#c8423c");
+    }
     rect(ctx, x - direction * 5, y - 2, 1, 5, "#fff");
   } else {
-    for (let i = 0; i < 5; i++)
+    for (let i = 0; i < 5; i++) {
       rect(ctx, x - 4 + i, y + i, 9 - 2 * i, 1, "#c8423c");
+    }
     rect(ctx, x - 5, y - 1, 11, 1, "#fff");
   }
 }

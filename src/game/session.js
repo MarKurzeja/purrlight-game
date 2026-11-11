@@ -73,10 +73,12 @@ export function startGame(state) {
   resetRuntime();
   invalidateStage();
   if (state.phase === "evening") state.phase = "night"; // never resume mid-gathering
-  if (!state.tasks || state.tasks.day !== state.day)
+  if (!state.tasks || state.tasks.day !== state.day) {
     createDailyNotes(state, game.rng);
-  if (presentCats(state).every((c) => state.cats[c.id].wish === null))
+  }
+  if (presentCats(state).every((c) => state.cats[c.id].wish === null)) {
     rollWishes(state, game.rng);
+  }
   for (const c of presentCats(state)) {
     const cat = state.cats[c.id];
     cat.tierSeen = Math.max(cat.tierSeen, tierOf(cat.bond)); // don't celebrate old tiers again

@@ -26,15 +26,18 @@ export function memoryIllustration(cat, index) {
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, 120, 54);
   ctx.fillStyle = mood === 4 ? "#f4f6fc" : "#a9cfa0";
-  for (let x = 0; x < 120; x++)
+  for (let x = 0; x < 120; x++) {
     ctx.fillRect(x, 38 + Math.sin(x * 0.05 + index) * 5, 1, 20);
+  }
   rect(ctx, 84, 18, 6, 20, "#c9c3d6");
   rect(ctx, 82, 12, 10, 6, mood === 3 ? "#ffe9a2" : "#8a8fae");
   if (mood === 3) ellipse(ctx, 87, 15, 10, 10, "rgba(255,226,150,.35)");
-  if (mood === 2)
+  if (mood === 2) {
     [10, 30, 60].forEach((x) => rect(ctx, x, 6 + (x % 9), 2, 2, "#fff"));
-  if (mood === 4)
+  }
+  if (mood === 4) {
     for (let k = 0; k < 30; k++) rect(ctx, rand(120), rand(50), 1, 1, "#fff");
+  }
   drawCat(ctx, cat, index % 2 ? "loaf" : "sit", 38, 46, { time: index });
   // Ragged paper edge, like a watercolour that ran out at the border.
   for (let y = 0; y < 54; y++) {

@@ -301,8 +301,9 @@ export function drawCatPortrait(ctx, cat, mood) {
     ];
   };
   for (let i = 0; i < 34; i++) ellipse(ctx, ...tailPoint(i), 8, 8, outline);
-  for (let i = 0; i < 34; i++)
+  for (let i = 0; i < 34; i++) {
     ellipse(ctx, ...tailPoint(i), 6, 6, i > 24 ? accent : fur);
+  }
 
   ellipse(ctx, 270, 172 + breath, 92, 56, outline);
   ellipse(ctx, 270, 172 + breath, 88, 52, mixColor(fur, "#5a4a5a", 0.14));
@@ -348,8 +349,9 @@ export function drawCatPortrait(ctx, cat, mood) {
     for (let y = 0; y < 26 - flat; y++) {
       const w = Math.round(y * 0.72);
       rect(ctx, tipX - w, tipY + y, w * 2 + 1, 1, outline);
-      if (y > 3)
+      if (y > 3) {
         rect(ctx, tipX - w + 3, tipY + y, Math.max(0, w * 2 - 5), 1, "#f2b9bf");
+      }
     }
   }
   const face = pattern === "point" ? accent : fur;
@@ -486,11 +488,11 @@ export function catPictureUrl(
   { pose = "sit", hat = null, wary = false, scale = 4 } = {},
 ) {
   const small = makeCanvas(30, 26);
-  if (wary)
+  if (wary) {
     drawCat(small.ctx, { coat: dustyCoat(cat.coat) }, pose, 15, 24, {
       time: 1,
     });
-  else drawCat(small.ctx, cat, pose, 15, 24, { time: 1, hat });
+  } else drawCat(small.ctx, cat, pose, 15, 24, { time: 1, hat });
   const big = makeCanvas(30 * scale, 26 * scale);
   big.ctx.drawImage(small.canvas, 0, 0, 30 * scale, 26 * scale);
   return big.canvas.toDataURL();
@@ -501,7 +503,8 @@ export function drawStrokingHand(ctx, x, y) {
   x = Math.round(x);
   y = Math.round(y);
   rect(ctx, x - 3, y, 7, 4, "#f0c4a0");
-  for (const finger of [-3, -1, 1, 3])
+  for (const finger of [-3, -1, 1, 3]) {
     rect(ctx, x + finger, y + 4, 1, 2, "#f0c4a0");
+  }
   rect(ctx, x - 3, y, 7, 1, "#d8a888");
 }

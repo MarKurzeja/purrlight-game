@@ -385,8 +385,9 @@ function playBar(section, time) {
       );
       break;
     case "melody":
-      if (Math.random() < 0.8)
+      if (Math.random() < 0.8) {
         playMelodyPhrase(section, chord, time, beat, humanise);
+      }
       break;
     case "musicbox":
       if (Math.random() < 0.75) {

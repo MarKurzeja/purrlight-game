@@ -83,8 +83,9 @@ function coatColor(coat, part, n) {
   if (y < -0.45) return coat.belly;
   switch (coat.pattern) {
     case "stripes":
-      if (part === "body")
+      if (part === "body") {
         return Math.sin(x * 11) > 0.25 && y > -0.2 ? coat.accent : coat.fur;
+      }
       return y > 0.45 && Math.sin(z * 16) > 0.1 ? coat.accent : coat.fur;
     case "tux":
       if (part === "body") return x > 0.55 && y < 0.5 ? coat.belly : coat.fur;

@@ -302,8 +302,9 @@ test(
         ctx.drawImage(canvas, 0, 0, 96, 54);
         const data = ctx.getImageData(0, 0, 96, 54).data;
         const seen = new Set();
-        for (let i = 0; i < data.length; i += 4)
+        for (let i = 0; i < data.length; i += 4) {
           seen.add(`${data[i] >> 4},${data[i + 1] >> 4}`);
+        }
         return seen.size;
       });
       assert.ok(colours > 30, `the 3D view shows a scene (${colours} colours)`);

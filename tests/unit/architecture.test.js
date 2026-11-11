@@ -42,8 +42,9 @@ test("each layer only imports from the layers below it", () => {
       /^import .* from '(\.[^']+)';$/gm,
     )) {
       const targetLayer = layerOf(join(file, "..", target));
-      if (!allowed.includes(targetLayer))
+      if (!allowed.includes(targetLayer)) {
         violations.push(`${file} imports ${target}`);
+      }
     }
   }
   assert.deepEqual(violations, []);

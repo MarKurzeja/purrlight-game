@@ -138,8 +138,9 @@ export function drawCozyRoom(seasonId) {
         y % 12 === 11 ? "#6e4630" : y % 12 < 2 ? "#a06e48" : "#8e5e3e",
       );
     }
-    for (let x = 0; x < VIEW_WIDTH; x += 64)
+    for (let x = 0; x < VIEW_WIDTH; x += 64) {
       rect(c, x + (x % 3) * 5, 0, 1, VIEW_HEIGHT, "#7a4e36");
+    }
     // The window is left clear: the real valley shows through it.
     c.clearRect(52, 22, 104, 98);
     for (const [x, y, w, h] of [
